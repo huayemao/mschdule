@@ -2,15 +2,15 @@ import { StyleSheet } from "react-native";
 import { Colors } from "./colors";
 
 export const CourseStatusStyles = StyleSheet.create({
-    courseGone: {
+    green: {
         backgroundColor: 'rgb(228, 243, 250)',
         color: 'rgb(84, 189, 207)',
     },
-    courseTocome: {
+    blue: {
         backgroundColor: 'rgb(236, 238, 251)',
         color: 'rgb(97, 127, 214)',
     },
-    courseGoingthrough: {
+    red: {
         backgroundColor: 'rgb(249, 239, 248)',
         color: 'rgb(237, 167, 193)',
     },

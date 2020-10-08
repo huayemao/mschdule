@@ -57,6 +57,7 @@ class TodayCourse1 extends Component {
 
         if (this.context.schedule) return (
             <View style={{ flex: 1, backgroundColor: Colors.light }}>
+                <StatusBar  translucent={true} barStyle='dark-content' backgroundColor={Colors.light} />
                 <View>
                     <Text style={styles.title}>TODAY'S COURSES</Text>
                     <Text style={styles.count}>{todayCourse instanceof Array && todayCourse && todayCourse.length || 0} courses</Text>
@@ -82,11 +83,9 @@ class TodayCourse1 extends Component {
                                 sub2: c.teacher,
                                 seperator: ' | ',
                                 value: `${2 * c.jc - 1}-${c.jc * 2}`,
-                                abs: c.zhouci,
+                                sub3: c.zhouci,
                                 state: Schedule.mapTime(c.jc - 1)
                             }
-
-
                             return (<Item onPress={() => this.props.navigation.navigate('课程详情', c)} index={index} data={data} key={index} {...this.props}></Item>)
                         }
                         )}
@@ -198,6 +197,7 @@ export class Home extends Component {
 
 
     async componentDidMount() {
+        StatusBar.setHidden(false)
         // try {
         //     if (!this.context.user) return
         //     const {user}=this.context
@@ -263,7 +263,6 @@ export class Home extends Component {
             
                 <SafeAreaView style={{ flex: 1 }}>
                     <KeyboardAvoidingView  style={{ flex: 1, backgroundColor: Colors.light }} behavior='height' >
-                        <StatusBar translucent={true} backgroundColor={Colors.light} barStyle={'dark-content'} />
                         <View style={{ backgroundColor: Colors.light }}>
                             <View style={{ width: '100%', marginTop: 30 + StatusBar.currentHeight, paddingLeft: 90, marginBottom: 30 }}>
                                 <Avatar source={require("../../assets/Snipa.jpg")}></Avatar>

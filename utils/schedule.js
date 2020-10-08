@@ -46,9 +46,9 @@ export const Schedule = {
     mapTime: function (jc) {
         // const Time = new Date();
         const time = curDate.getHours() + curDate.getMinutes() / 60
-        if (time > scheduleArr[jc].start & time < scheduleArr[jc].end) return 'courseGoingthrough'
-        if (time > scheduleArr[jc].end) return 'courseGone'
-        if (time < scheduleArr[jc].start) return 'courseTocome'
+        if (time > scheduleArr[jc].start & time < scheduleArr[jc].end) return 'red'
+        if (time > scheduleArr[jc].end) return 'green'
+        if (time < scheduleArr[jc].start) return 'blue'
     },
     getAndSaveStartDates: async function (grade) {
         console.log("开始获取开学日期")

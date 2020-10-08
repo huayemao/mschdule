@@ -38,7 +38,7 @@ export class performance extends Component {
                                 sub4: `${item.character} | ${item.obtainMethod}`,
                                 abs: item.credits,
                                 value: item.score,
-                                state: 'courseGoingthrough',
+                                state: 'green',
                                 seperator: '-'
                             }
                             return (<Item key={`${index}`} data={data} onPress={() => { }} ></Item>)

@@ -292,7 +292,6 @@ export class Library extends Component {
 
         return (
             <View style={{ paddingTop: StatusBar.currentHeight, flex: 1, backgroundColor: 'white' }}>
-                <StatusBar translucent={true} backgroundColor={'rgba(0,0,0,0)'}></StatusBar>
                 <Block flex={false} row center space="between" style={styles.header}>
                     <Text1 h1 bold>
                         图书馆

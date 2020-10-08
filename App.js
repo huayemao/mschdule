@@ -1,6 +1,5 @@
 
 import React, { Component } from 'react';
-import { Text, View } from 'react-native'
 import SplashScreen from 'react-native-splash-screen'
 import 'react-native-gesture-handler';
 import { NavigationContainer } from '@react-navigation/native';
@@ -8,7 +7,7 @@ import { MenuProvider } from 'react-native-popup-menu';
 import { HomeStackScreen } from './screens/home/homeScreen';
 import Settings from './screens/settings';
 import { Colors } from './styles/colors';
-import { ToolBoxStackScreen } from './screens/toolBox/toolBox';
+import { ToolBoxStackScreen } from './screens/toolBox/explore';
 import screenInfo from './utils/screen'
 import Table from './screens/table';
 import CourseDetail from './screens/courseDetail';
@@ -24,8 +23,6 @@ import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 import { createMaterialBottomTabNavigator } from '@react-navigation/material-bottom-tabs';
 
 const MyTab = createMaterialBottomTabNavigator();
-
-
 const CourseStack = createStackNavigator();
 const Stack = createStackNavigator()
 
@@ -89,6 +86,7 @@ class App extends Component {
 
     this.initialSchedule = async () => {
       try {
+        console.log("从本地初始化课表");
         let schedules = await Schedule.retriveSchedules();
         await Schedule.retriveStartDates()
         await this.setSchedule(schedules)
@@ -101,9 +99,11 @@ class App extends Component {
 
 
     this.downLoadSchedule = async (user) => {
+
       await Schedule.setStartDates(user.grade); //存储本学期的开学日期
       await Schedule.getAllSchedules(user)  //存储课表
       this.setSchedule(Schedule.schedules)
+      // Schedule.saveSchedules(null)
     }
 
     this.handleJWLogin = async (username, password) => {
@@ -184,7 +184,9 @@ class App extends Component {
       ecardData: EcardService.reset(),
       setEcardData: this.setEcardData,
       downLoadSchedule: this.downLoadSchedule,
-      initialEcard: this.initialEcard
+      initialEcard: this.initialEcard,
+      initialSchedule:this.initialSchedule,
+      downLoadSchedule:this.downLoadSchedule
     }
 
   }

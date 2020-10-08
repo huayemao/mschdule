@@ -1,4 +1,4 @@
-package com.mSchedule;
+package com.mschedule;
 import android.os.Bundle;
 import com.facebook.react.ReactActivity;
 import org.devio.rn.splashscreen.SplashScreen; 
@@ -13,7 +13,7 @@ public class MainActivity extends ReactActivity {
 
   @Override
   protected String getMainComponentName() {
-    return "mSchedule";
+    return "mschedule";
   }
 
       @Override

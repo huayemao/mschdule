@@ -31,7 +31,6 @@ export default class CourseDetail extends Component {
         const { params } = this.props.route
         return (
             <View style={{ flex: 1, backgroundColor: Colors.light, justifyContent: 'center', alignItems: 'center' }}>
-            <StatusBar backgroundColor='transparent'></StatusBar>
                 <View style={{ width: '100%' }}>
                     {/* <Modal
                         animationType="slide"

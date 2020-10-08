@@ -165,7 +165,7 @@ export default class ProjectsScreen extends React.Component {
                     (!this.state.canbeOpened || !this.state.data) && <Flower start={()=>this.setState({canbeOpened:true})}></Flower>
                 }
 
-                <StatusBar barStyle="dark-content" translucent={true} backgroundColor="rgba(0,0,0,0.001)" />
+        
                 {this.state.data &&
                     <>
                         <AnimatedMask style={{ opacity: this.state.opacity }} />

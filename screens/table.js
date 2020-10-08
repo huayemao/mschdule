@@ -215,8 +215,6 @@ export default class Table extends Component {
         if (this.context.schedule) {
             return (
                 <View style={{ backgroundColor: Colors.light, flex: 1, paddingTop: StatusBar.currentHeight }}>
-                    <StatusBar backgroundColor={Colors.light}></StatusBar>
-
                     <View style={{ height: TOP_HEIGHT, flexDirection: 'row' }}>
                         <Text style={{ width: screenWidth / 3, fontSize: 15, color: '#3c4560', fontFamily: 'Futura', textAlign: 'center', textAlignVertical: 'center', borderBottomColor: Colors.foreGreen, borderBottomWidth: 1 }}>{Schedule.curDate.toLocaleDateString()}</Text>
                         <View style={{ flexGrow: 1.5, borderBottomWidth: 1, borderBottomColor: Colors.foreBlue }}>

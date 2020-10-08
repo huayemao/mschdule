@@ -143,8 +143,6 @@ export default class Todo extends Component {
 
         return (
             <>
-                <StatusBar barStyle="dark-content" />
-
                 <Header
                     value={this.state.value}
                     onAddItem={this.handleAddItem}

@@ -60,10 +60,12 @@ export default class Ecard extends Component {
                             console.log(postResult.config)
                             this.setState({ loading: false })
                             Alert.alert(
-                                '错误',
+                                '完成',
                                 postResult.data.msg
                             );
-                            // this.ecardRefresh()
+                            
+                            this.ecardRefresh();
+                            // this.setState({value:''})
                         })
                     }
                 },
@@ -103,77 +105,76 @@ export default class Ecard extends Component {
         else if (EcardLogind) {
 
             return (
-                
+
                 <View style={{ flex: 1 }}>
-                   
-                        <StatusBar translucent={true} networkActivityIndicatorVisible={true} animated={true} barStyle={'dark-content'} backgroundColor={Colors.light} />
-                        <View style={{ backgroundColor: Colors.light, flex: 1, zIndex: 1, justifyContent: 'center' }}>
-                            <Factors
-                                style={{ alignItems: 'center' }}
-                                data={[
-                                    { title: '银行卡余额', value: bankBalance },
-                                    { title: '校园卡余额', value: ecardbalance },
-                                    { title: '过渡余额', value: transBalance },
-                                    { title: '电子账户', value: eAccountBalance }]} />
-                        </View>
+
+                    <View style={{ backgroundColor: Colors.light, flex: 1, zIndex: 1, justifyContent: 'center' }}>
+                        <Factors
+                            style={{ alignItems: 'center' }}
+                            data={[
+                                { title: '银行卡余额', value: bankBalance },
+                                { title: '校园卡余额', value: ecardbalance },
+                                { title: '过渡余额', value: transBalance },
+                                { title: '电子账户', value: eAccountBalance }]} />
+                    </View>
 
 
-                        <View style={{ flex: 5, backgroundColor: 'white', position: 'relative', justifyContent: 'center' }}>
-                            {/* <Text1 bold gray size={16} style={{ paddingHorizontal: theme.sizes.padding,marginBottom:Dimensions.get('window').width * 0.3}}>转账到</Text1> */}
-                            <Text1 bold gray size={16} style={{ paddingHorizontal: theme.sizes.padding }}>转账到</Text1>
-                            {/* <View style={{ height: Dimensions.get('window').width * 0.42,position:'absolute',top:-16,zIndex:-1,paddingHorizontal:Dimensions.get('window').width * 0.1 }}> */}
-                            {/* <View style={{ height: Dimensions.get('window').width * 0.42 }}> */}
-                            <View style={{ height: Dimensions.get('window').width * 0.42, paddingHorizontal: Dimensions.get('window').width * 0.1, zIndex: -1 }}>
-                                <Swiper onIndexChanged={(index) => {
-                                    if (index === 0) this.setState({ active: '校园卡' })
-                                    else if (index === 1) this.setState({ active: '电子账户' })
+                    <View style={{ flex: 5, backgroundColor: 'white', position: 'relative', justifyContent: 'center' }}>
+                        {/* <Text1 bold gray size={16} style={{ paddingHorizontal: theme.sizes.padding,marginBottom:Dimensions.get('window').width * 0.3}}>转账到</Text1> */}
+                        <Text1 bold gray size={16} style={{ paddingHorizontal: theme.sizes.padding }}>转账到</Text1>
+                        {/* <View style={{ height: Dimensions.get('window').width * 0.42,position:'absolute',top:-16,zIndex:-1,paddingHorizontal:Dimensions.get('window').width * 0.1 }}> */}
+                        {/* <View style={{ height: Dimensions.get('window').width * 0.42 }}> */}
+                        <View style={{ height: Dimensions.get('window').width * 0.42, paddingHorizontal: Dimensions.get('window').width * 0.1, zIndex: -1 }}>
+                            <Swiper onIndexChanged={(index) => {
+                                if (index === 0) this.setState({ active: '校园卡' })
+                                else if (index === 1) this.setState({ active: '电子账户' })
 
-                                }} loop={false} horizontal={false} style={{ backgroundColor: 'white', justifyContent: 'center' }}>
-                                    <View style={{ alignItems: 'center' }}>
-                                        <ImageBackground source={require('../../assets/shadow.jpg')} style={{ width: Dimensions.get('window').width * 0.7, height: Dimensions.get('window').width * 13 / 20 * 0.7, padding: Dimensions.get('window').width * 24 / 200 * 0.7 }}>
-                                            <View style={{ alignItems: 'center', backgroundColor: Colors.backGreen, flex: 1, borderRadius: 10, justifyContent: 'center' }}>
-                                                <Icon name={'ios-card'} style={{ textAlign: 'center' }} size={50} color={Colors.foreGreen} ></Icon>
-                                                <Text1 gray style={{ color: Colors.foreGreen, fontSize: 20, textAlign: 'center', fontFamily: 'Futura', padding: 4 }}>校园卡</Text1>
-                                            </View>
+                            }} loop={false} horizontal={false} style={{ backgroundColor: 'white', justifyContent: 'center' }}>
+                                <View style={{ alignItems: 'center' }}>
+                                    <ImageBackground source={require('../../assets/shadow.jpg')} style={{ width: Dimensions.get('window').width * 0.7, height: Dimensions.get('window').width * 13 / 20 * 0.7, padding: Dimensions.get('window').width * 24 / 200 * 0.7 }}>
+                                        <View style={{ alignItems: 'center', backgroundColor: Colors.backGreen, flex: 1, borderRadius: 10, justifyContent: 'center' }}>
+                                            <Icon name={'ios-card'} style={{ textAlign: 'center' }} size={50} color={Colors.foreGreen} ></Icon>
+                                            <Text1 gray style={{ color: Colors.foreGreen, fontSize: 20, textAlign: 'center', fontFamily: 'Futura', padding: 4 }}>校园卡</Text1>
+                                        </View>
 
-                                        </ImageBackground>
-                                    </View>
-                                    <View style={{ alignItems: 'center' }}>
-                                        <ImageBackground source={require('../../assets/shadow.jpg')} style={{ width: Dimensions.get('window').width * 0.7, height: Dimensions.get('window').width * 13 / 20 * 0.7, padding: Dimensions.get('window').width * 24 / 200 * 0.7 }}>
-                                            <View style={{ alignItems: 'center', backgroundColor: Colors.backBlue, flex: 1, borderRadius: 10, justifyContent: 'center' }}>
-                                                <Icon name={'ios-flash'} style={{ textAlign: 'center' }} size={50} color={Colors.foreBlue} ></Icon>
-                                                <Text1 style={{ color: Colors.foreBlue, fontSize: 20, textAlign: 'center', fontFamily: 'Futura', padding: 4 }}>电子账户</Text1>
-                                            </View>
-                                        </ImageBackground>
-                                    </View>
-                                </Swiper>
-                            </View>
-
-                            <View style={{ flexDirection: 'row', alignItems: 'center',marginVertical:theme.sizes.padding }}>
-                                <Text1 style={{ paddingHorizontal: theme.sizes.padding,flex:1}} bold gray size={16}>转账金额</Text1>
-                                <TextInput
-                                    style={{ flex:2, fontSize: 16, borderBottomColor: Colors.subTitle, borderBottomWidth: 1 }}
-                                    value={this.state.value}
-                                    onChangeText={(value) => this.setState({ value: value })}
-                                    onSubmitEditing={this.handlePost}
-                                    placeholder="请输入转账金额"
-                                    placeholderTextColor={Colors.subTitle}
-                                    blurOnSubmit={true}
-                                    returnKeyType="done"
-                                    keyboardType='numeric'
-                                />
-                                <Text1 style={{ paddingHorizontal: theme.sizes.padding,flex:1 }} bold gray size={16}></Text1>
+                                    </ImageBackground>
                                 </View>
-                            <Button style={{ margin: theme.sizes.padding, padding: theme.sizes.padding, height: 50, borderRadius: 10, elevation: 1, backgroundColor: Colors.backRed }} color={Colors.purple} onPress={this.handlePost}>
-                                {this.state.loading ? (
-                                    <ActivityIndicator size="small" color={Colors.forRed} />
-                                ) :
-                                    <Text1 color={Colors.forRed} size={18} center bold> 确定</Text1>}
-                            </Button>
-
+                                <View style={{ alignItems: 'center' }}>
+                                    <ImageBackground source={require('../../assets/shadow.jpg')} style={{ width: Dimensions.get('window').width * 0.7, height: Dimensions.get('window').width * 13 / 20 * 0.7, padding: Dimensions.get('window').width * 24 / 200 * 0.7 }}>
+                                        <View style={{ alignItems: 'center', backgroundColor: Colors.backBlue, flex: 1, borderRadius: 10, justifyContent: 'center' }}>
+                                            <Icon name={'ios-flash'} style={{ textAlign: 'center' }} size={50} color={Colors.foreBlue} ></Icon>
+                                            <Text1 style={{ color: Colors.foreBlue, fontSize: 20, textAlign: 'center', fontFamily: 'Futura', padding: 4 }}>电子账户</Text1>
+                                        </View>
+                                    </ImageBackground>
+                                </View>
+                            </Swiper>
                         </View>
 
-                
+                        <View style={{ flexDirection: 'row', alignItems: 'center', marginVertical: theme.sizes.padding }}>
+                            <Text1 style={{ paddingHorizontal: theme.sizes.padding, flex: 1 }} bold gray size={16}>转账金额</Text1>
+                            <TextInput
+                                style={{ flex: 2, fontSize: 16, borderBottomColor: Colors.subTitle, borderBottomWidth: 1 }}
+                                value={this.state.value}
+                                onChangeText={(value) => this.setState({ value: value })}
+                                onSubmitEditing={this.handlePost}
+                                placeholder="请输入转账金额"
+                                placeholderTextColor={Colors.subTitle}
+                                blurOnSubmit={true}
+                                returnKeyType="done"
+                                keyboardType='numeric'
+                            />
+                            <Text1 style={{ paddingHorizontal: theme.sizes.padding, flex: 1 }} bold gray size={16}></Text1>
+                        </View>
+                        <Button style={{ margin: theme.sizes.padding, padding: theme.sizes.padding, height: 50, borderRadius: 10, elevation: 1, backgroundColor: Colors.backRed }} color={Colors.purple} onPress={this.handlePost}>
+                            {this.state.loading ? (
+                                <ActivityIndicator size="small" color={Colors.forRed} />
+                            ) :
+                                <Text1 color={Colors.forRed} size={18} center bold> 确定</Text1>}
+                        </Button>
+
+                    </View>
+
+
 
                 </View>
 

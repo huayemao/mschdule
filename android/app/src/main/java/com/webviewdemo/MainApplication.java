@@ -1,4 +1,4 @@
-package com.mSchedule;
+package com.mschedule;
 
 import android.app.Application;
 import android.content.Context;
