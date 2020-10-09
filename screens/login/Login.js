@@ -1,4 +1,5 @@
 import React, { Component } from "react";
+import { StatusBar } from "react-native";
 import {
     ActivityIndicator,
     Keyboard,
@@ -7,15 +8,15 @@ import {
     View
 } from "react-native";
 
-import Icon from 'react-native-vector-icons/dist/FontAwesome5';
-import { Button, Block, Input, Text } from "../components";
-import { theme } from "../constants";
-import { UserContext } from "../contexts/userContext";
-import User from "../models/user";
-import { Schedule } from "../utils/schedule";
+import MaterialIcon  from 'react-native-vector-icons/MaterialIcons';
+import { Button, Block, Input, Text } from "../../components";
+import { theme } from "../../constants";
+import { UserContext } from "../../contexts/userContext";
+import User from "../../models/user";
+import { Schedule } from "../../utils/schedule";
 
-const VALID_EMAIL = "8305180722";
-const VALID_PASSWORD = "190310";
+const VALID_EMAIL = "";
+const VALID_PASSWORD = "";
 
 const content = {
     JW: {
@@ -103,8 +104,8 @@ export default class Login extends Component {
         return (
             <View style={styles.login} >
 
-                <Block color='white' padding={[0, theme.sizes.base * 2]}>
-                    <Button opacity={0.3} onPress={() => { onBack() }}><Text gray><Icon name='arrow-left' size={15}></Icon></Text></Button>
+                <Block color='white' padding={[StatusBar.currentHeight, theme.sizes.base * 2]}>
+                    <Button opacity={0.3} onPress={() => { onBack() }}><Text gray><MaterialIcon name='arrow-back' size={20}></MaterialIcon></Text></Button>
 
                     <Text h1 bold>
                         {content[type].title}
@@ -150,9 +151,10 @@ export default class Login extends Component {
                             <Text gray caption center>
                                {content[type].term}
                             </Text>
-                            <Button onPress={() => navigation.navigate("Forgot")}>
+                            {/* <Button onPress={() => navigation.navigate("Forgot")}>
                                 <Text gray caption center style={{ textDecorationLine: "underline" }}>详细服务条款</Text>
-                            </Button></View>
+                            </Button> */}
+                            </View>
                     </Block>
                 </Block>
 

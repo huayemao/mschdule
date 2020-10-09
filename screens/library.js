@@ -33,10 +33,11 @@ export class Library extends Component {
     constructor(props) {
         super(props);
         this.state = {
-            data:{},
+            data: {},
             searchFocus: new Animated.Value(0.6),
             searchString: null,
             refreshing: false,
+            showTerms: false,
             filters: {
                 // bookTypes: null,
                 // publishers: null,
@@ -48,19 +49,19 @@ export class Library extends Component {
         }
     }
 
-    setFilterParameters(key,value){
-        let temp={};
-        temp[key]=encodeURI(value.replace(value.match(/\(\d*\)/)[0],''))
+    setFilterParameters(key, value) {
+        let temp = {};
+        temp[key] = encodeURI(value.replace(value.match(/\(\d*\)/)[0], ''))
         console.log(temp)
         this.setState({
-            filters:{
+            filters: {
                 // ...this.state.filters,
                 ...temp
             }
         })
         //   
         // let str=`page=${page}&strKeyValue=${this.state.searchString}&strType=text&tabletype=*&RepSearch=&strKeyValue2=&&strAllAuthor=&strAllPubyear=&strAllPublish=${publishers}&strAllLanguage=&strCondition2=&strpageNum=20&strVip=&strStartYear=&strEndYear=&strPublisher=&strAuthorer=&strSortType=&strSort=desc`
-    
+
     }
 
     renderFooter() {
@@ -71,7 +72,7 @@ export class Library extends Component {
                     style={styles.footer}
                     colors={["rgba(255,255,255,0)", "rgba(255,255,255,0.6)"]}
                 >
-                    <Button gradient style={{ width: width / 3, height: 45 }} onPress={() => {pageTorender=1; this.search(pageTorender) }}>
+                    <Button gradient style={{ width: width / 3, height: 45 }} onPress={() => { pageTorender = 1; this.search(pageTorender) }}>
                         <Text1 bold white center>
                             搜索
                         </Text1>
@@ -122,19 +123,19 @@ export class Library extends Component {
         }).start();
     }
 
-    search(page,cover=true) {
+    search(page, cover = true) {
         this.setState({ refreshing: true })
-        let {searchString}=this.state;
-        let filters={
+        let { searchString } = this.state;
+        let filters = {
             ...this.state.filters,
-            publishers:this.state.filters.publishers||''
+            publishers: this.state.filters.publishers || ''
         }
 
 
 
-        LibraryService.searchBook(searchString, page,filters.publishers).then(data => {
+        LibraryService.searchBook(searchString, page, filters.publishers).then(data => {
             this.setState({
-                data:{
+                data: {
                     ...data,
                     books: (this.state.data.books && !cover) ? [...this.state.data.books, ...data.books] : data.books,
                 },
@@ -151,9 +152,10 @@ export class Library extends Component {
         )
     }
     renderTermsService() {
-        const {data,filters}=this.state;
+        const { data, filters } = this.state;
         return (
             <Modal
+                style={{ height: 300 }}
                 animationType="slide"
                 visible={this.state.showTerms}
                 onRequestClose={() => this.setState({ showTerms: false })}
@@ -187,9 +189,9 @@ export class Library extends Component {
 
                         <Picker style={{ width: '100%', height: 20, fontSize: 14, color: theme.colors.gray }}
                             onValueChange={(value) => {
-                                this.setFilterParameters('publishers',value)
+                                this.setFilterParameters('publishers', value)
                             }}
-                            prompt={"出版社"} selectedValue={filters.publishers||'all'}>
+                            prompt={"出版社"} selectedValue={filters.publishers || 'all'}>
                             <Picker.Item label="全部" value="all" />
                             {data.publishers && data.publishers.map((e, i) => {
                                 return (
@@ -267,7 +269,7 @@ export class Library extends Component {
                 <Block middle padding={[theme.sizes.base / 2, theme.sizes.base * 2]}>
                     <Button
                         gradient
-                        onPress={() => {this.setState({ showTerms: false });}}
+                        onPress={() => { this.setState({ showTerms: false }); }}
                     >
                         <Text1 center white>
                             确定
@@ -288,7 +290,7 @@ export class Library extends Component {
         // const isRunning = await server.isRunning();
     }
     render() {
-        const {data}=this.state;
+        const { data } = this.state;
 
         return (
             <View style={{ paddingTop: StatusBar.currentHeight, flex: 1, backgroundColor: 'white' }}>
@@ -301,17 +303,11 @@ export class Library extends Component {
                 <Button onPress={() => this.setState({ showTerms: true })}>
                     <Text center caption gray>筛选</Text>
                 </Button>
-                {data && <Block flex={false} row padding={[theme.sizes.base]}>
-                    {['文献类型', '地理', '历史'].map(tag => (
-                        <Text key={`tag-${tag}`} caption gray style={styles.tag}>
-                            {tag}
-                        </Text>
-                    ))}
-                </Block>}
+          
                 {this.renderTermsService()}
                 <FlatList
                     onEndReachedThreshold={0.5}
-                    onEndReached={() => { this.search(++pageTorender,false) }}
+                    onEndReached={() => { this.search(++pageTorender, false) }}
                     style={{ backgroundColor: Colors.light }}
                     data={data.books && data.books}
                     renderItem={this.renderItems}
@@ -321,7 +317,7 @@ export class Library extends Component {
                             refreshing={this.state.refreshing}
                             colors={[Colors.purple]}
                             progressBackgroundColor={"#ffffff"}
-                            onRefresh={() => { pageTorender = 1; this.search(pageTorender,true) }}
+                            onRefresh={() => { pageTorender = 1; this.search(pageTorender, true) }}
                         />
                     }
                 >
@@ -354,9 +350,9 @@ const Item = (item) => {
     const book = item.book
     return (
         <Block style={{}} color={'white'} center row margin={[1, 0]} padding={[8, 10]}>
-            <BoxShadow setting={inputShadowOpt}>
-                <Image style={{ width: 80, height: 120 }} source={{ uri: `http://202.112.150.126/index.php?client=csu&isbn=${book.ISBN}/cover` }}></Image>
-            </BoxShadow>
+
+            <Image style={{ width: 80, height: 120 }} source={{ uri: `http://202.112.150.126/index.php?client=csu&isbn=${book.ISBN}/cover` }}></Image>
+
             <Block>
                 <Text1 height={25} header style={{ fontFamily: 'Futura' }} numberOfLines={2} >{book.title}</Text1>
                 <Text1 height={22} gray body>

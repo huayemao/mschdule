@@ -35,7 +35,7 @@ export class ToolBox extends Component {
                 <View style={{ flex: 1, flexDirection: 'row', flexWrap: 'wrap', justifyContent: 'center', alignItems: 'center', backgroundColor: Colors.light }} >
                     <Card title='图书馆' iconName='library-books' onPress={() => this.props.navigation.navigate('图书馆')}></Card>
                     <Card title='我的教务' iconName='school' onPress={() => Alert.alert('尽请期待')}></Card>
-                    <Card title='网址导航' iconName='pageview'></Card>
+                    <Card title='网址导航' iconName='pageview' onPress={() => Alert.alert('尽请期待')}></Card>
                     <Card title='校园卡服务' iconName='loop' onPress={() => Alert.alert('尽请期待')}></Card>
                     {/* <Card title='校园卡服务' iconName='loop' onPress={() => this.props.navigation.navigate('校园卡')}></Card> */}
                 </View>

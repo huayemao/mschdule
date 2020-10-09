@@ -1,7 +1,7 @@
 import React, { Component } from "react";
 import { StyleSheet, TextInput } from "react-native";
-// import * as Icon from "@expo/vector-icons";
-import Icon from 'react-native-vector-icons/Ionicons';
+
+import MaterialIcon  from 'react-native-vector-icons/MaterialIcons';
 import Text from "./Text";
 import Block from "./Block";
 import Button from "./Button";
@@ -40,10 +40,10 @@ export default class Input extends Component {
         <Text gray2 accent>{rightLabel ? (
           rightLabel
         ) : (
-            <Icon
+            <MaterialIcon
               color={theme.colors.gray}
               size={theme.sizes.font * 1.35}
-              name={!toggleSecure ? "md-eye" : "md-eye-off"}
+              name={!toggleSecure ? "remove-red-eye" : "security"}
             />
           )}</Text>
       </Button>

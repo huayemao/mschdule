@@ -1,6 +1,6 @@
 import React, { Component } from 'react'
 import { Text, View } from 'react-native'
-import Login from '../modals.js/Login'
+import Login from './login/Login'
 
 export class ModelScreen extends Component {
     render() {

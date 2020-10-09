@@ -40,7 +40,8 @@ export default class Table extends Component {
             selectedWeek: Schedule.getCurWeek(),
             curWeek: Schedule.getCurWeek(),
             visible: true,
-            term: Schedule.curTerm
+            term: Schedule.curTerm,
+            loading: true
         }
         this._onPageSelected = this._onPageSelected.bind(this);
         this._renderPagers = this._renderPagers.bind(this);
@@ -57,7 +58,7 @@ export default class Table extends Component {
     async componentDidMount() {
         try {
 
-
+            this.setState({ schedule: this.context.schedule })
         } catch (error) {
             console.log(error);
         }
@@ -136,69 +137,35 @@ export default class Table extends Component {
         }
 
         return (
-            <View key={key} style={{ flex: 1 }}>
-                <ScrollView horizontal={true} showsHorizontalScrollIndicator={false} style={[styles.background]}>
-                    <View style={{ width: screenWidth * 1.4, flexDirection: 'row', flexWrap: 'wrap', backgroundColor: Colors.light }}>
-                        <TableHeader></TableHeader>
-                        <View style={{ backgroundColor: Colors.light, width: CELL_WIDTH / 2.5, top: HEADER_HEIGHT, position: 'absolute', left: 0, zIndex: 100 }}>
-                            {['1-2', '3-4', '5-6', '7-8', '9-10', '10-11'].map((e, index) => <Left jc={e} key={e} courseState={Schedule.mapTime(index)}></Left>)}
-                        </View>
-                        {cells.map((cell, index) => {
-                            return (
-                                <View style={[styles.table, {
-                                    backgroundColor: 'white',
-                                    position: 'relative',
-                                    left: CELL_WIDTH / 2.5,
-                                    borderColor: 'rgba(0,0,0,0.2)',
-                                }]} key={index}>
+            <View key={key}>
+                <View style={{ flex: 10 }}>
+                    <ScrollView horizontal={true} showsHorizontalScrollIndicator={false}>
+                        <View style={{ width: screenWidth * 1.4, flexDirection: 'row', alignContent: 'stretch', flexWrap: 'wrap', alignItems: 'stretch', backgroundColor: Colors.light }}>
+                            <TableHeader></TableHeader>
+                            {/* <TimeLine></TimeLine> */}
+                            {cells.map((cell, index) => {
+                                if (index % 7 != 0) return (<Course cell={cell} key={index} {...this.props}></Course>)
+                                else {
+                                    return (
+                                        <View key={index} style={{ flexDirection: 'row', alignSelf: 'stretch' }}>
+                                            <Left jc={`${index / 7 * 2 + 1}-${index / 7 * 2 + 2}`} courseState={Schedule.mapTime(index / 7)}></Left>
+                                            <Course cell={cell}  ></Course>
+                                        </View>)
+                                }
+                            }
 
-                                    {cell[0] &&
-                                        <TouchableNativeFeedback background={TouchableNativeFeedback.Ripple('#BABABB', false)} onPress={(e) =>
-                                            this.props.navigation.navigate('课程详情', cell[0])
-                                        }
+                            )}
 
-                                        >
-                                            <View style={styles.cell}>
-                                                <Text style={styles.cellText} numberOfLines={2}>{cell[0].name}</Text>
-                                                <Text style={styles.classRoom}>{cell[0].classRoom || ''}</Text>
-                                            </View>
-                                        </TouchableNativeFeedback>
-                                    }
-
-                                    {cell.length > 1 &&
-                                        <View style={styles.more}>
-                                            <Menu renderer={renderers.Popover}>
-                                                <MenuTrigger customStyles={{ TriggerTouchableComponent: TouchableOpacity, triggerTouchable: { activeOpacity: 0.85 } }}>
-                                                    <Text style={[styles.moreText]}>  <Icon name='ios-leaf' size={18}></Icon></Text>
-
-                                                </MenuTrigger>
-
-                                                <MenuOptions>
-                                                    {cell.map((course, index) =>
-                                                        <MenuOption key={index} onSelect={() => this.props.navigation.navigate('课程详情', course)}  >
-                                                            <View style={{ padding: 5, flexDirection: 'row' }}>
-                                                                <Text><Text style={{ color: Colors.purple }}>{String.fromCharCode(10017)}</Text> {course.name} </Text>
-                                                            </View>
-                                                        </MenuOption>)}
-                                                </MenuOptions>
-                                            </Menu>
-                                        </View>
-                                    }
-
-                                </View>
-                            )
-                        })}
-                    </View>
-                </ScrollView>
-                <View style={{ height: TAB_HEIGHT, alignItems: 'center' }}  >
-                    <View style={{ backgroundColor: Colors.backGreen, width: '100%', height: '100%' }}>
-                        <Text1 gray2 center style={{ color: Colors.foreGreen, fontSize: 20, fontFamily: 'Futura', zIndex: 1, position: 'relative', top: -10 }}>第{key}周</Text1>
-                        <View style={{ flexDirection: 'row', justifyContent: 'space-around' }}>
-                            <Icon name={'ios-arrow-back'} size={20} color={Colors.foreGreen}></Icon>
-                            <Text1 center gray2 style={{ paddingHorizontal: 30, paddingVertical: 10, textAlignVertical: 'center', position: 'relative', top: -10, fontFamily: 'Futura' }}> 滑动换页 </Text1>
-                            <Icon name={'ios-arrow-forward'} size={20} color={Colors.foreGreen}></Icon>
                         </View>
 
+                    </ScrollView>
+                </View>
+                <View style={{ flex: 1, alignItems: 'center', backgroundColor: Colors.backGreen }}>
+                    <Text1 gray2 center style={{ color: Colors.foreGreen, fontSize: 20, fontFamily: 'Futura', zIndex: 1, position: 'relative', top: -10 }}>第{key}周</Text1>
+                    <View style={{ flexDirection: 'row', justifyContent: 'space-around' }}>
+                        <Icon name={'ios-arrow-back'} size={20} color={Colors.foreGreen}></Icon>
+                        <Text1 center gray2 style={{ paddingHorizontal: 30, paddingVertical: 10, textAlignVertical: 'center', position: 'relative', top: -10, fontFamily: 'Futura' }}> 滑动换页 </Text1>
+                        <Icon name={'ios-arrow-forward'} size={20} color={Colors.foreGreen}></Icon>
                     </View>
                 </View>
 
@@ -215,7 +182,7 @@ export default class Table extends Component {
         if (this.context.schedule) {
             return (
                 <View style={{ backgroundColor: Colors.light, flex: 1, paddingTop: StatusBar.currentHeight }}>
-                    <View style={{ height: TOP_HEIGHT, flexDirection: 'row' }}>
+                    <View style={{ flexDirection: 'row', flex: 1 }}>
                         <Text style={{ width: screenWidth / 3, fontSize: 15, color: '#3c4560', fontFamily: 'Futura', textAlign: 'center', textAlignVertical: 'center', borderBottomColor: Colors.foreGreen, borderBottomWidth: 1 }}>{Schedule.curDate.toLocaleDateString()}</Text>
                         <View style={{ flexGrow: 1.5, borderBottomWidth: 1, borderBottomColor: Colors.foreBlue }}>
                             <Picker
@@ -228,7 +195,7 @@ export default class Table extends Component {
                                 }
                             >
                                 <Picker.Item label="当前学期" value={Schedule.curTerm} />
-                                {Schedule.getTerms(user.grade).map((e) => <Picker.Item label={e} key={e} value={e} />)}
+                                {user && Schedule.getTerms(user.grade).map((e) => <Picker.Item label={e} key={e} value={e} />)}
 
                             </Picker>
                             <View style={{ position: 'absolute', top: 0, left: 0, right: 0, bottom: 0, justifyContent: 'center', alignItems: 'center', zIndex: -10, borderRadius: 5 }}>
@@ -259,10 +226,10 @@ export default class Table extends Component {
                         </View>
                     </View>
 
-                    {this.state.schedule &&
+                    {this.state.schedule && !this.state.loading &&
                         <ViewPager
                             initialPage={this.state.selectedWeek}
-                            style={{ flex: 1 }}
+                            style={{ flex: 12 }}
                             ref={viewPager => { this.viewPager = viewPager; }}
                             onPageSelected={this._onPageSelected}
                             showPageIndicator={true}
@@ -270,7 +237,7 @@ export default class Table extends Component {
                             {this.state.pages.map((e, index) => this._renderPagerItem(index, index))}
                         </ViewPager>
                     }
-                    {!this.viewPager && <ActivityIndicator onLayout={() => this.setState({ schedule: this.context.schedule })} size="large" style={{ background: 'white', position: 'absolute', flex: 1, top: 0, left: 0, bottom: 0, right: 0 }} color={Colors.purple} />}
+                    {!this.viewPager && this.state.loading && <ActivityIndicator onLayout={() => this.setState({ loading: false })} size="large" style={{ background: 'white', flex: 10 }} color={Colors.purple} />}
                     {/* 
                 <Swiper onIndexChanged={(index) => this._onPageSelected(index)} loop={false} ref={swiper => { this.swiper = swiper; }} showsHorizontalScrollIndicator={true} showsPagination={false}>
                     {this.state.pages.map((e, index) => this._renderPagerItem(index, index))}
@@ -298,7 +265,6 @@ const styles = StyleSheet.create({
     cell: {
         alignItems: 'center',
         width: CELL_WIDTH,
-        height: CELL_HEIGHT,
         backgroundColor: "#fff",
         overflow: "hidden",
         justifyContent: 'space-around',
@@ -309,12 +275,11 @@ const styles = StyleSheet.create({
         marginVertical: CELL_WIDTH / 30,
         backgroundColor: 'rgba(0,0,0,0.05)',
         width: CELL_WIDTH,
-        height: CELL_HEIGHT,
         position: 'relative'
     },
     background: {
-        backgroundColor: 'white',
-        flex: 1
+        backgroundColor: 'red',
+        flex: 5
     },
     cellText: {
         fontWeight: '600',
@@ -322,9 +287,9 @@ const styles = StyleSheet.create({
         paddingHorizontal: 2,
         color: Colors.title,
         textAlign: 'center',
-        lineHeight: 18,
+        lineHeight: 16,
         letterSpacing: 0,
-        fontSize: 14,
+        fontSize: 13,
         overflow: 'hidden',
         letterSpacing: 0,
     },
@@ -332,7 +297,7 @@ const styles = StyleSheet.create({
         color: Colors.subTitle,
         marginTop: 2,
         textAlign: 'center',
-        fontSize: 13,
+        fontSize: 12,
         backgroundColor: Colors.light,
         borderRadius: 3,
         padding: 1,
@@ -394,9 +359,65 @@ const TableHeader = function () {
 }
 
 const Left = function (props) {
-    return (<View style={[{ height: CELL_HEIGHT, marginVertical: CELL_WIDTH / 30, justifyContent: 'center', alignItems: 'center' }, CourseStatusStyles[props.courseState]]}>
+    return (<View style={[{
+        marginVertical: CELL_WIDTH / 30, justifyContent: 'center', alignItems: 'center', minWidth: CELL_WIDTH / 2.5
+    }, CourseStatusStyles[props.courseState]]}>
         <Text style={[{ color: Colors.foreGreen, textAlign: 'center', fontWeight: 'bold', textAlignVertical: 'center', fontSize: 16, height: 18 }, CourseStatusStyles[props.courseState]]}>{props.jc.split('-')[0]}</Text>
         <Text style={[{ color: Colors.foreGreen, textAlign: 'center', textAlignVertical: 'top', fontSize: 16, height: 16 }, CourseStatusStyles[props.courseState]]}>ⲓ</Text>
         <Text style={[{ color: Colors.foreGreen, textAlign: 'center', fontWeight: 'bold', textAlignVertical: 'center', fontSize: 16, height: 18 }, CourseStatusStyles[props.courseState]]}>{props.jc.split('-')[1]}</Text>
+    </View>)
+}
+
+const TimeLine = function () {
+
+    return (<View style={{ backgroundColor: Colors.light, width: CELL_WIDTH / 2.5, top: HEADER_HEIGHT, position: 'absolute', left: 0, zIndex: 100 }}>
+        {['1-2', '3-4', '5-6', '7-8', '9-10', '10-11'].map((e, index) => <Left jc={e} key={e} courseState={Schedule.mapTime(index)}></Left>)}
+    </View>)
+}
+
+
+
+const Course = function (props) {
+    const { cell,navigation } = props
+
+    return (<View style={[styles.table, {
+        backgroundColor: 'white',
+        position: 'relative',
+        borderColor: 'rgba(0,0,0,0.2)',
+    }]} >
+
+        {cell[0] &&
+            <TouchableNativeFeedback background={TouchableNativeFeedback.Ripple('#BABABB', false)} onPress={(e) =>
+                navigation.navigate('课程详情', cell[0])
+            }
+
+            >
+                <View style={styles.cell}>
+                    <Text style={styles.cellText} numberOfLines={2}>{cell[0].name}</Text>
+                    <Text style={styles.classRoom}>{cell[0].classRoom || ''}</Text>
+                </View>
+            </TouchableNativeFeedback>
+        }
+
+        {cell.length > 1 &&
+            <View style={styles.more}>
+                <Menu renderer={renderers.Popover}>
+                    <MenuTrigger customStyles={{ TriggerTouchableComponent: TouchableOpacity, triggerTouchable: { activeOpacity: 0.85 } }}>
+                        <Text style={[styles.moreText]}>  <Icon name='ios-leaf' size={18}></Icon></Text>
+
+                    </MenuTrigger>
+
+                    <MenuOptions>
+                        {cell.map((course, index) =>
+                            <MenuOption key={index} onSelect={() => navigation.navigate('课程详情', course)}  >
+                                <View style={{ padding: 5, flexDirection: 'row' }}>
+                                    <Text><Text style={{ color: Colors.purple }}>{String.fromCharCode(10017)}</Text> {course.name} </Text>
+                                </View>
+                            </MenuOption>)}
+                    </MenuOptions>
+                </Menu>
+            </View>
+        }
+
     </View>)
 }

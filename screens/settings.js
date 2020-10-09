@@ -13,15 +13,14 @@ import Animated from 'react-native-reanimated';
 import { createMaterialTopTabNavigator } from '@react-navigation/material-top-tabs';
 import { SvgXml } from 'react-native-svg';
 // import Icon from 'react-native-vector-icons/FontAwesome';
-import Icon from 'react-native-vector-icons/Ionicons';
+import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 import { Colors } from '../styles/colors';
 import Swiper from 'react-native-swiper'
 import Ecard from './home/ecard'
-import Login from '../modals.js/Login';
+import Login from './login/Login';
 import Table from './table';
 import { TouchableNativeFeedback } from 'react-native';
 import Item, { ItemContainer } from '../components/item';
-import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 import { Block, Button, Text as Text1 } from '../components';
 import { theme } from '../constants';
 import { ActivityIndicator } from 'react-native';
@@ -79,6 +78,7 @@ export default class Settings extends Component {
             this.setState({ loading: false });
             this.props.navigation.navigate('主页')
           } catch (error) {
+            this.setState({ loading: false });
             alert(error)
           }
 
@@ -88,18 +88,20 @@ export default class Settings extends Component {
 
         <Item containerStyle={{ backgroundColor: 'white' }} onPress={async () => {
           try {
-            if(this.context.user){
-            await  this.context.downLoadSchedule(this.context.user)
-            ToastAndroid.show("更新课表数据成功", ToastAndroid.LONG)
-            console.log(this.context);
-            this.setState({ loading: false });
-            this.props.navigation.navigate('主页')
+            this.setState({ loading: true });
+            if (this.context.user) {
+              await this.context.downLoadSchedule(this.context.user)
+              ToastAndroid.show("更新课表数据成功", ToastAndroid.LONG)
+              console.log(this.context);
+              this.setState({ loading: false });
+              this.props.navigation.navigate('主页')
             }
-            else{
+            else {
               ToastAndroid.show("您尚未登录", ToastAndroid.LONG)
             }
-         
+            this.setState({ loading: false });
           } catch (error) {
+            this.setState({ loading: false });
             alert(error)
           }
 

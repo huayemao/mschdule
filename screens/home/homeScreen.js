@@ -1,5 +1,5 @@
 import React, { Component } from 'react'
-import { Text, View, StyleSheet, ScrollView, StatusBar, SafeAreaView, Image, Modal, ToastAndroid, ActivityIndicator,KeyboardAvoidingView } from 'react-native'
+import { Text, View, StyleSheet, ScrollView, StatusBar, SafeAreaView, Image, Modal, ToastAndroid, ActivityIndicator, KeyboardAvoidingView } from 'react-native'
 import { createStackNavigator } from '@react-navigation/stack';
 import ClassDetial from '../courseDetail';
 import { Colors } from '../../styles/colors';
@@ -12,13 +12,13 @@ import { Schedule } from '../../utils/schedule';
 import { createMaterialTopTabNavigator } from '@react-navigation/material-top-tabs';
 import MyTabBar from '../../components/myTabBar';
 import { TouchableOpacity, TouchableNativeFeedback } from 'react-native-gesture-handler';
-import Icon from 'react-native-vector-icons/Ionicons';
+import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 import { SvgXml } from 'react-native-svg';
 import AddCourse from './addCourse';
 import screenInfo from '../../utils/screen';
 import Xmls from '../../components/svgXmls'
 import User from '../../models/user';
-import Login from '../../modals.js/Login';
+import Login from '../login/Login';
 import { Block, Button, Text as Text1 } from '../../components';
 import { theme } from '../../constants';
 import { UserContext } from '../../contexts/userContext';
@@ -57,7 +57,7 @@ class TodayCourse1 extends Component {
 
         if (this.context.schedule) return (
             <View style={{ flex: 1, backgroundColor: Colors.light }}>
-                <StatusBar  translucent={true} barStyle='dark-content' backgroundColor={Colors.light} />
+
                 <View>
                     <Text style={styles.title}>TODAY'S COURSES</Text>
                     <Text style={styles.count}>{todayCourse instanceof Array && todayCourse && todayCourse.length || 0} courses</Text>
@@ -69,7 +69,7 @@ class TodayCourse1 extends Component {
                         <Button style={{ width: 160, height: 45 }} gradient onPress={() => {
                             this.setState({ modalVisible: true })
                         }}>
-                            <Text1 white center bold><Icon name={'ios-add'} size={theme.sizes.font} ></Icon> 添加课程</Text1>
+                            <Text1 white center bold><MaterialIcons name={'add'} size={theme.sizes.font} ></MaterialIcons> 添加课程</Text1>
                         </Button>
                     </View>}
 
@@ -260,9 +260,9 @@ export class Home extends Component {
     render() {
         return (
             <>
-            
                 <SafeAreaView style={{ flex: 1 }}>
-                    <KeyboardAvoidingView  style={{ flex: 1, backgroundColor: Colors.light }} behavior='height' >
+                    <StatusBar translucent={true} barStyle='dark-content' backgroundColor={'transparent'} />
+                    <KeyboardAvoidingView style={{ flex: 1, backgroundColor: Colors.light }} behavior='height' >
                         <View style={{ backgroundColor: Colors.light }}>
                             <View style={{ width: '100%', marginTop: 30 + StatusBar.currentHeight, paddingLeft: 90, marginBottom: 30 }}>
                                 <Avatar source={require("../../assets/Snipa.jpg")}></Avatar>
