@@ -1,6 +1,6 @@
 import React, { Component } from 'react'
 import { Text, View, StyleSheet, StatusBar, Picker, ToastAndroid, ActivityIndicator, Animated } from 'react-native'
-import { ScrollView, TouchableOpacity, Switch, Swipeable, RectButton, TouchableNativeFeedback } from 'react-native-gesture-handler'
+import { ScrollView, TouchableOpacity, TouchableNativeFeedback } from 'react-native-gesture-handler'
 import { Colors } from '../styles/colors'
 import { theme } from '../constants';
 import ViewPager from '@react-native-community/viewpager';
@@ -20,14 +20,15 @@ import { colors } from '../constants/theme';
 import { UserContext } from '../contexts/userContext';
 import { SvgXml } from 'react-native-svg';
 
+
 const { screenHeight, screenWidth } = screenInfo;
-const TAB_HEIGHT = screenHeight / 15;
-const HEADER_HEIGHT = screenHeight / 22;
-const TOP_HEIGHT = screenHeight / 16 + 2;
 const CELL_WIDTH = screenWidth / 5.5;
-const BOTTOM_HEIGHT = screenHeight / 25;
-// const CELL_HEIGHT = (screenHeight - TOP_HEIGHT - StatusBar.currentHeight - TAB_HEIGHT - CELL_WIDTH- / 30 * 10)/ 6;
-const CELL_HEIGHT = (screenHeight - HEADER_HEIGHT - TOP_HEIGHT - TAB_HEIGHT - CELL_WIDTH / 30 * 2 * 5 - StatusBar.currentHeight) / 6
+
+
+
+function getWeekStr(week) {
+    return week === 0 ? '全部周' : `第${week}周`
+}
 
 
 export default class Table extends Component {
@@ -35,20 +36,15 @@ export default class Table extends Component {
     constructor(props) {
         super(props);
         this.state = {
-            // pages: [1, 2],
             pages: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16],
             selectedWeek: Schedule.getCurWeek(),
-            curWeek: Schedule.getCurWeek(),
-            visible: true,
             term: Schedule.curTerm,
             loading: true
         }
         this._onPageSelected = this._onPageSelected.bind(this);
         this._renderPagers = this._renderPagers.bind(this);
         this.filterCourse = this.filterCourse.bind(this)
-        this.reduceWeek = this.reduceWeek.bind(this)
-        this.increaseWeek = this.increaseWeek.bind(this)
-        this.getWeekStr = this.getWeekStr.bind(this)
+
 
     }
 
@@ -70,6 +66,7 @@ export default class Table extends Component {
         if (filter < 0) {
             ToastAndroid.show("不能再往前了哦", ToastAndroid.SHORT)
             this.viewPager.setPage(0)
+
             return
         }
         if (filter > 25) {
@@ -84,35 +81,6 @@ export default class Table extends Component {
     }
 
 
-    reduceWeek() {
-        if (this.state.pages.length == 1) {
-            ToastAndroid.show("不能再往前了哦", ToastAndroid.SHORT)
-            this.viewPager.setPage(0)
-            return
-        }
-
-        this.setState({ selectedWeek: this.state.pages.length - 3 })
-        this.viewPager.setPage(this.state.pages.length - 3)
-
-        // 当前周次为 pages.length-2
-    }
-
-    increaseWeek() {
-        if (this.state.pages.length > 26) {
-            ToastAndroid.show("不能再往后了哦", ToastAndroid.SHORT)
-            this.viewPager.setPage(25)
-            return
-        }
-        this.setState({ selectedWeek: this.state.pages.length - 1 })
-        this.viewPager.setPage(this.state.pages.length - 1)
-
-    }
-
-    getWeekStr() {
-        return this.state.selectedWeek == 0 ? `全部周` : `第${this.state.selectedWeek}周`
-        // return this.state.pages.length - 2 == 0 ? `全部周` : `第${this.state.pages.length - 2 }周`
-    }
-
     _renderPagers() {
 
         //this.state.pages中的元素个数为 position+1 ，使得永远都有下一页，每个页面的 filter 为 index
@@ -122,6 +90,7 @@ export default class Table extends Component {
     _onPageSelected(e) {
         let position = e.nativeEvent.position;
         this.setState({ selectedWeek: position })
+
         // this.setState({ pages: Array(position + 2).fill('1'), selectedWeek: position })
     }
 
@@ -136,35 +105,36 @@ export default class Table extends Component {
             }
         }
 
+
         return (
             <View key={key}>
                 <View style={{ flex: 10 }}>
                     <ScrollView horizontal={true} showsHorizontalScrollIndicator={false}>
-                        <View style={{ width: screenWidth * 1.4, flexDirection: 'row', alignContent: 'stretch', flexWrap: 'wrap', alignItems: 'stretch', backgroundColor: Colors.light }}>
-                            <TableHeader></TableHeader>
-                            {/* <TimeLine></TimeLine> */}
-                            {cells.map((cell, index) => {
-                                if (index % 7 != 0) return (<Course cell={cell} key={index} {...this.props}></Course>)
-                                else {
-                                    return (
-                                        <View key={index} style={{ flexDirection: 'row', alignSelf: 'stretch' }}>
-                                            <Left jc={`${index / 7 * 2 + 1}-${index / 7 * 2 + 2}`} courseState={Schedule.mapTime(index / 7)}></Left>
-                                            <Course cell={cell}  ></Course>
-                                        </View>)
+                        <View style={{ width: screenWidth * 1.4, flex: 1, backgroundColor: Colors.light }}>
+                            <TableHeader weekOffset={this.state.selectedWeek - Schedule.getCurWeek()}></TableHeader>
+                            <View style={{ flexDirection: 'row', alignContent: 'stretch', flexWrap: 'wrap', alignItems: 'stretch', flex: 11 }}>
+                                {cells.map((cell, index) => {
+                                    if (index % 7 != 0) return (<Course cell={cell} key={index} {...this.props}></Course>)
+                                    else {
+                                        return (
+                                            <View key={index} style={{ flexDirection: 'row', alignSelf: 'stretch' }}>
+                                                <Left jc={`${index / 7 * 2 + 1}-${index / 7 * 2 + 2}`} courseState={Schedule.mapTime(index / 7)}></Left>
+                                                <Course cell={cell}  ></Course>
+                                            </View>)
+                                    }
                                 }
-                            }
 
-                            )}
-
+                                )}
+                            </View>
                         </View>
 
                     </ScrollView>
                 </View>
                 <View style={{ flex: 1, alignItems: 'center', backgroundColor: Colors.backGreen }}>
-                    <Text1 gray2 center style={{ color: Colors.foreGreen, fontSize: 20, fontFamily: 'Futura', zIndex: 1, position: 'relative', top: -10 }}>第{key}周</Text1>
+                    <Text1 gray2 center style={{ color: Colors.foreGreen, fontSize: 20, fontFamily: 'Futura', zIndex: 1, position: 'relative', top: -10 }}>{getWeekStr(key)}</Text1>
                     <View style={{ flexDirection: 'row', justifyContent: 'space-around' }}>
                         <Icon name={'ios-arrow-back'} size={20} color={Colors.foreGreen}></Icon>
-                        <Text1 center gray2 style={{ paddingHorizontal: 30, paddingVertical: 10, textAlignVertical: 'center', position: 'relative', top: -10, fontFamily: 'Futura' }}> 滑动换页 </Text1>
+                        <Text1 center gray2 style={{ paddingHorizontal: 30, paddingVertical: 10, textAlignVertical: 'center', position: 'relative', top: -10, fontFamily: 'Futura' }}> 滑动换页</Text1>
                         <Icon name={'ios-arrow-forward'} size={20} color={Colors.foreGreen}></Icon>
                     </View>
                 </View>
@@ -176,15 +146,14 @@ export default class Table extends Component {
 
 
     render() {
-        this.viewpager && console.log(this.viewpager)
+        console.log(this.state);
         const { user } = this.context
         const weeks = Array(26).fill(0);
         if (this.context.schedule) {
             return (
                 <View style={{ backgroundColor: Colors.light, flex: 1, paddingTop: StatusBar.currentHeight }}>
                     <View style={{ flexDirection: 'row', flex: 1 }}>
-                        <Text style={{ width: screenWidth / 3, fontSize: 15, color: '#3c4560', fontFamily: 'Futura', textAlign: 'center', textAlignVertical: 'center', borderBottomColor: Colors.foreGreen, borderBottomWidth: 1 }}>{Schedule.curDate.toLocaleDateString()}</Text>
-                        <View style={{ flexGrow: 1.5, borderBottomWidth: 1, borderBottomColor: Colors.foreBlue }}>
+                        <View style={{ flexGrow: 1.5 }}>
                             <Picker
                                 prompt={"选择学期"}
                                 ref={r => this.Picker1 = r}
@@ -202,7 +171,7 @@ export default class Table extends Component {
                                 <Text1 style={{ fontSize: 15, textAlign: 'center', textAlignVertical: 'center', height: '70%', width: '85%', borderRadius: 7, backgroundColor: Colors.backBlue, color: Colors.foreBlue, fontFamily: 'Futura', zIndex: 1 }}>{`${this.state.term}`}</Text1>
                             </View>
                         </View>
-                        <View style={{ flexGrow: 1, borderBottomWidth: 1, borderBottomColor: Colors.forRed }}>
+                        <View style={{ flexGrow: 1 }}>
                             <Picker
                                 prompt={"选择周次"}
                                 ref={r => this.Picker = r}
@@ -215,20 +184,19 @@ export default class Table extends Component {
                                     }
                                 }
                             >
-                                <Picker.Item label="全部周" value={0} />
-                                <Picker.Item label="当前周" value={this.state.curWeek} />
-                                {weeks.map((e, index) => (<Picker.Item key={index} label={`第${index + 1}周`} value={index + 1} />))}
+                                <Picker.Item label="当前周" value={Schedule.getCurWeek()} />
+                                {weeks.map((e, index) => (<Picker.Item key={index} label={getWeekStr(index)} value={index} />))}
                             </Picker>
                             <View style={{ position: 'absolute', top: 0, left: 0, right: 0, bottom: 0, justifyContent: 'center', alignItems: 'center', zIndex: -10 }}>
                                 <Text1 style={{ width: '85%', height: '70%', borderRadius: 7, fontSize: 15, textAlign: 'center', textAlignVertical: 'center', padding: 3, backgroundColor: Colors.backRed, color: Colors.forRed, fontFamily: 'Futura', zIndex: 1 }}>{`第${this.state.selectedWeek}周`}</Text1>
                             </View>
-
                         </View>
                     </View>
 
                     {this.state.schedule && !this.state.loading &&
                         <ViewPager
-                            initialPage={this.state.selectedWeek}
+                            overScrollMode='never'
+                            initialPage={Schedule.getCurWeek()}
                             style={{ flex: 12 }}
                             ref={viewPager => { this.viewPager = viewPager; }}
                             onPageSelected={this._onPageSelected}
@@ -237,11 +205,7 @@ export default class Table extends Component {
                             {this.state.pages.map((e, index) => this._renderPagerItem(index, index))}
                         </ViewPager>
                     }
-                    {!this.viewPager && this.state.loading && <ActivityIndicator onLayout={() => this.setState({ loading: false })} size="large" style={{ background: 'white', flex: 10 }} color={Colors.purple} />}
-                    {/* 
-                <Swiper onIndexChanged={(index) => this._onPageSelected(index)} loop={false} ref={swiper => { this.swiper = swiper; }} showsHorizontalScrollIndicator={true} showsPagination={false}>
-                    {this.state.pages.map((e, index) => this._renderPagerItem(index, index))}
-                </Swiper> */}
+                    {!this.viewPager && this.state.loading && <ActivityIndicator onLayout={() => this.setState({ loading: false })} size="large" style={{ background: 'white', flex: 12 }} color={Colors.purple} />}
                 </View>
 
             )
@@ -275,7 +239,8 @@ const styles = StyleSheet.create({
         marginVertical: CELL_WIDTH / 30,
         backgroundColor: 'rgba(0,0,0,0.05)',
         width: CELL_WIDTH,
-        position: 'relative'
+        position: 'relative',
+        justifyContent: 'center'
     },
     background: {
         backgroundColor: 'red',
@@ -283,18 +248,18 @@ const styles = StyleSheet.create({
     },
     cellText: {
         fontWeight: '600',
-        paddingTop: 11,
+        paddingTop: 3,
         paddingHorizontal: 2,
         color: Colors.title,
         textAlign: 'center',
-        lineHeight: 16,
+        lineHeight: screenHeight >= 700 ? 16 : 14.5,
         letterSpacing: 0,
-        fontSize: 13,
+        fontSize: screenHeight >= 700 ? 14 : 12.5,
         overflow: 'hidden',
         letterSpacing: 0,
     },
     classRoom: {
-        color: Colors.subTitle,
+        color: Colors.foreBlue,
         marginTop: 2,
         textAlign: 'center',
         fontSize: 12,
@@ -303,7 +268,7 @@ const styles = StyleSheet.create({
         padding: 1,
         paddingHorizontal: 8,
         letterSpacing: -0.4,
-        marginBottom: 10,
+        marginBottom: 2,
 
     },
     more: {
@@ -327,17 +292,18 @@ const styles = StyleSheet.create({
     },
     text: {
         textAlign: 'center',
-        fontSize: 20,
+        fontSize: 14,
         textAlignVertical: 'center',
         fontFamily: 'Futura',
         color: Colors.subTitle,
     },
     container: {
-        height: HEADER_HEIGHT,
+        alignItems: 'center',
         paddingLeft: CELL_WIDTH / 2.5,
         flexDirection: 'row',
         elevation: 2,
         backgroundColor: 'white',
+        flex: 1
         // marginBottom: 4
     }
 });
@@ -345,15 +311,29 @@ const styles = StyleSheet.create({
 
 
 
-const TableHeader = function () {
-    const arr = ['Mon', 'Tues', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
+// let now = new Date(Schedule.startDate.valueOf());
+let now = new Date();
+const month = now.getMonth()
+const date = now.getDate()
 
+
+const TableHeader = function (props) {
+    const { weekOffset } = props
+    const arr = ['周一', '周二', '周三', '周四', '周五', '周六', '周日'];
     return (
         <View style={styles.container}>
-            {arr.map((day, index) =>
-                <View key={index} style={[styles.element, (Schedule.day == index + 1 | Schedule.day == 0 & index == 6) && { backgroundColor: Colors.light, borderRadius: 5 }]}>
-                    <Text style={[styles.text, (Schedule.day == index + 1 | Schedule.day == 0 & index == 6) && { color: Colors.purple }]}>{day}</Text>
-                </View>)}
+            {arr.map((day, index) => {
+                now.setMonth(month)
+                now.setDate(date + index + 1 - Schedule.day + weekOffset * 7)
+                let doNotDisplay=false
+                if((now-Schedule.startDate)/1000/60/60/24<=0) doNotDisplay=true
+
+                return (
+                    <View key={index} style={[styles.element, (Schedule.day == index + 1 | Schedule.day == 0 & index == 6) && { backgroundColor: Colors.light, borderRadius: 5 }]}>
+                        <Text style={[styles.text, (Schedule.day == index + 1 | Schedule.day == 0 & index == 6) && { color: Colors.purple }]}>{day}</Text>
+                <Text style={{ fontSize: 13, ...styles.text }}> {doNotDisplay?'-':`${now.getMonth()+1}/${now.getDate()}`}</Text>
+                    </View>)
+            })}
         </View>
     )
 }
@@ -362,23 +342,18 @@ const Left = function (props) {
     return (<View style={[{
         marginVertical: CELL_WIDTH / 30, justifyContent: 'center', alignItems: 'center', minWidth: CELL_WIDTH / 2.5
     }, CourseStatusStyles[props.courseState]]}>
-        <Text style={[{ color: Colors.foreGreen, textAlign: 'center', fontWeight: 'bold', textAlignVertical: 'center', fontSize: 16, height: 18 }, CourseStatusStyles[props.courseState]]}>{props.jc.split('-')[0]}</Text>
-        <Text style={[{ color: Colors.foreGreen, textAlign: 'center', textAlignVertical: 'top', fontSize: 16, height: 16 }, CourseStatusStyles[props.courseState]]}>ⲓ</Text>
-        <Text style={[{ color: Colors.foreGreen, textAlign: 'center', fontWeight: 'bold', textAlignVertical: 'center', fontSize: 16, height: 18 }, CourseStatusStyles[props.courseState]]}>{props.jc.split('-')[1]}</Text>
+        <Text style={[{ color: Colors.foreGreen, textAlign: 'center', fontWeight: 'bold', textAlignVertical: 'center', fontSize: 16, height: 17 }, CourseStatusStyles[props.courseState]]}>{props.jc.split('-')[0]}</Text>
+        <Text style={[{ color: Colors.foreGreen, textAlign: 'center', textAlignVertical: 'top', fontWeight: 'bold', fontSize: 12, height: 16 }, CourseStatusStyles[props.courseState]]}>ⲓ</Text>
+        <Text style={[{ color: Colors.foreGreen, textAlign: 'center', fontWeight: 'bold', textAlignVertical: 'center', fontSize: 16, height: 17 }, CourseStatusStyles[props.courseState]]}>{props.jc.split('-')[1]}</Text>
     </View>)
 }
 
-const TimeLine = function () {
 
-    return (<View style={{ backgroundColor: Colors.light, width: CELL_WIDTH / 2.5, top: HEADER_HEIGHT, position: 'absolute', left: 0, zIndex: 100 }}>
-        {['1-2', '3-4', '5-6', '7-8', '9-10', '10-11'].map((e, index) => <Left jc={e} key={e} courseState={Schedule.mapTime(index)}></Left>)}
-    </View>)
-}
 
 
 
 const Course = function (props) {
-    const { cell,navigation } = props
+    const { cell, navigation } = props
 
     return (<View style={[styles.table, {
         backgroundColor: 'white',
@@ -395,6 +370,7 @@ const Course = function (props) {
                 <View style={styles.cell}>
                     <Text style={styles.cellText} numberOfLines={2}>{cell[0].name}</Text>
                     <Text style={styles.classRoom}>{cell[0].classRoom || ''}</Text>
+                    <Text style={{ color: Colors.subTitle, fontSize: 12, lineHeight: 14 }}>{cell[0].zhouci || ''}</Text>
                 </View>
             </TouchableNativeFeedback>
         }
@@ -421,3 +397,4 @@ const Course = function (props) {
 
     </View>)
 }
+

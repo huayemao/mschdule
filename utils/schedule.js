@@ -17,19 +17,25 @@ const curYear = curDate.getFullYear();
 const seperator = new Date(curDate.getFullYear(), 7, 15)//日期大于8月15日时进入下学期
 const curTerm = (curDate > seperator) ? `${curYear}-${curYear + 1}-1` : `${curYear - 1}-${curYear}-2`;
 console.log(curTerm)
+
+let terms
+
 const getTerms = function (grade) {
-    console.log(grade)
-    let terms = [];
+    if (terms) return terms
+
+    console.log('getTerms', grade)
+    let data = [];
     for (let i = 0; i < curYear - grade; i++) {
-        terms.push(`${grade + i}-${grade + i + 1}-1`)
-        terms.push(`${grade + i}-${grade + i + 1}-2`)
+        data.push(`${grade + i}-${grade + i + 1}-1`)
+        data.push(`${grade + i}-${grade + i + 1}-2`)
     }
-    if (curDate > seperator) terms.push(`${curYear}-${curYear + 1}-1`)
-    return terms
+    if (curDate > seperator) data.push(`${curYear}-${curYear + 1}-1`)
+    terms = data
+    return data
 }
 
 let startDate = new Date(2020, 7, 6);
-
+let curWeek;
 
 export const Schedule = {
     startDate,
@@ -37,11 +43,12 @@ export const Schedule = {
     emptyCell,
     day,
     curTerm,
+    curWeek,
     schedules: {},
     curTeachingWeek: Math.ceil(((curDate - Number(startDate)) / 1000 / 60 / 60 / 24 / 7)),
     getTerms: getTerms,
     getCurWeek: function () {
-        return Math.ceil(((curDate - Number(startDate)) / 1000 / 60 / 60 / 24 / 7))
+        return curWeek || Math.ceil(((curDate - Number(startDate)) / 1000 / 60 / 60 / 24 / 7))
     },
     mapTime: function (jc) {
         // const Time = new Date();
@@ -83,7 +90,7 @@ export const Schedule = {
                 msg: '获取开学日期失败'
             })
         } catch (error) {
-            throw(error)
+            throw (error)
         }
     },
 
@@ -104,23 +111,23 @@ export const Schedule = {
         try {
             const value = await AsyncStorage.getItem('schedule');
             if (value) {
-                this.setSchedules=JSON.parse(value)
+                this.setSchedules = JSON.parse(value)
                 return JSON.parse(value);
             }
             else return null
         } catch (error) {
-            throw(error)
+            throw (error)
         }
     },
 
-    setSchedules(schedules){
-        this.schedules=schedules
+    setSchedules(schedules) {
+        this.schedules = schedules
     },
-    
+
     async saveSchedules(schedules) {
         try {
             await AsyncStorage.setItem('schedule', JSON.stringify(schedules))
-           
+
         } catch (error) {
             console.log(error)
         }
@@ -138,12 +145,12 @@ export const Schedule = {
             Schedule.schedules[key] = Course.createBatch(data.data)
         }
         console.log("课表数据解析成功");
-        await this.saveSchedules(Schedule.schedules)        
+        await this.saveSchedules(Schedule.schedules)
         console.log(`保存课表数据成功`);
-        Schedule.schedules=await this.retriveSchedules()
-      
+        Schedule.schedules = await this.retriveSchedules()
+
         console.log("获取课表数据成功")
-        
+
         // this.setSchedules(schedules)
     },
 
