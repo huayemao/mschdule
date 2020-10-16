@@ -1,4 +1,4 @@
-package com.mschedule;
+package xyz.seedbed.mschedule;
 import android.os.Bundle;
 import com.facebook.react.ReactActivity;
 import org.devio.rn.splashscreen.SplashScreen; 

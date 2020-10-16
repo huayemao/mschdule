@@ -15,36 +15,38 @@ export default class EcardService {
     static checkSign='';
 
     static async login(account, password) {
-        axios.defaults.withCredentials = true;
-        const res=await axios({
-            url: 'http://ecard.csu.edu.cn:8070/Account/Login',
-            method: 'POST',
-            headers: {
-                ...defaultHeaderOpt,
-                "Referer": "http://ecard.csu.edu.cn:8070/Account/Login?next=aHR0cDovL2VjYXJkLmNzdS5lZHUuY246ODA3MC9TeW5DYXJkL01hbmFnZS9UcmFuc2Zlcg==",
-            },
-            data: "SignType=SynSno&UserAccount=" + account + "&Password=" + Base64.encode(password) + "&NextUrl=aHR0cDovL2VjYXJkLmNzdS5lZHUuY246ODA3MC9TeW5DYXJkL01hbmFnZS9UcmFuc2Zlcg%3D%3D&openid=&Schoolcode=csu"
-        })
-       
-        if (res && res.status == 200) {
-            if(res.data.success == true){
-                return{
-                    result:"登录成功",
+        console.log(account,password);
+    
+        return new Promise(async function (resolve, reject) {
+            const res = await axios({
+                url: 'http://ecard.csu.edu.cn:8070/Account/Login',
+                method: 'POST',
+                headers: {
+                    ...defaultHeaderOpt,
+                    "Referer": "http://ecard.csu.edu.cn:8070/Account/Login?next=aHR0cDovL2VjYXJkLmNzdS5lZHUuY246ODA3MC9TeW5DYXJkL01hbmFnZS9UcmFuc2Zlcg==",
+                },
+                data: "SignType=SynSno&UserAccount=" + account + "&Password=" + Base64.encode(password) + "&NextUrl=aHR0cDovL2VjYXJkLmNzdS5lZHUuY246ODA3MC9TeW5DYXJkL01hbmFnZS9UcmFuc2Zlcg%3D%3D&openid=&Schoolcode=csu"
+            
+            })
+            if (res.status = 200) {
+                if(res.data.success == true){
+                    resolve({
+                        result:"登录成功",
+                    })
+                }
+                else{
+                    reject({
+                        result:"登录失败",
+                        msg:res.data.msg
+                    })
                 }
             }
-            else{
-                return{
-                    result:"登录失败",
-                    msg:res.data.msg
-                }
-            }
-        }
-        else{
-            return{
+            else reject({
                 result:"登录失败",
                 msg:res.status+res.statusText
-            }
-        }
+            })
+
+        })
     }
 
     static TrjnQuery(){
@@ -92,6 +94,7 @@ export default class EcardService {
                
             }
         })
+        console.log(res)
 
         const $ = cheerio.load(res.data);
         const checkSign=$('#sign').val().trim()
@@ -110,7 +113,7 @@ export default class EcardService {
         axios.defaults.withCredentials = true;
         try {
             let res = await axios({
-                url: 'http://ecard.csu.edu.cn:8070/SynCard/Manage/BasicInfo ',
+                url: 'http://ecard.csu.edu.cn:8070/SynCard/Manage/BasicInfo',
                 method: 'GET',
                 headers: {
                     ...defaultHeaderOpt,
@@ -118,9 +121,12 @@ export default class EcardService {
                     "Content-Type": "application/x-www-form-urlencoded; charset=UTF-8",
                 },
             })
-            console.log(res)
+          
             const $ = cheerio.load(res.data);
             const checkSign=$('#sign').text().trim()
+
+            const name = $('table tr:nth-child(1) > td.second').text().trim()
+
             const ecardbalance = $('table tr:nth-child(3) > td.second > span').text().trim()
             // const ecardbalance = res.data.match(/red">\d+.\d+/)[0].substring(5)//校园卡余额
             const bankCard = $('table tr:nth-child(5) > td.second').text().trim()
@@ -133,8 +139,9 @@ export default class EcardService {
             // const transBalance = res.data.match(/>(\d+\.\d+)|(>0)/g)[3].substring(1)
             const eAccountBalance = $('table tr:nth-child(4) > td.second > span').text().trim()
             // const eAccountBalance = res.data.match(/>(\d+\.\d+)|(>0)/g)[1].substring(1)
-            console.log({ ecardbalance,bankCard,ecardNum,bankBalance,transBalance,eAccountBalance,checkSign })
-            return { ecardbalance,bankCard,ecardNum,bankBalance,transBalance,eAccountBalance,checkSign }
+            const data={ ecardbalance,bankCard,ecardNum,bankBalance,transBalance,eAccountBalance,checkSign,name }
+            console.log(data)
+         return data
             
         } catch (error) {
             console.log(error)

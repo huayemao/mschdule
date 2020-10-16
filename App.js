@@ -1,16 +1,15 @@
 
 import React, { Component } from 'react';
-import SplashScreen from 'react-native-splash-screen'
 import 'react-native-gesture-handler';
 import { NavigationContainer } from '@react-navigation/native';
 import { MenuProvider } from 'react-native-popup-menu';
-import { HomeStackScreen } from './screens/home/homeScreen';
-import Settings from './screens/settings';
+import { HomeScreen } from './screens/home/HomeScreen';
+import Settings from './screens/settings/SettingsScreen';
 import { Colors } from './styles/colors';
-import { ToolBoxStackScreen } from './screens/toolBox/explore';
+import { ToolBoxStackScreen } from './screens/explore/ExploreScreen';
 import screenInfo from './utils/screen'
-import Table from './screens/table';
-import CourseDetail from './screens/courseDetail';
+import Table, { TableStack } from './screens/Table/TableScreen';
+import CourseDetail from './screens/Table/CourseScreen';
 import { createStackNavigator, HeaderStyleInterpolators } from '@react-navigation/stack';
 import { TransitionPresets } from '@react-navigation/stack';
 import ModelScreen from './screens/ModelScreen';
@@ -18,9 +17,12 @@ import { UserContext } from './contexts/userContext';
 import User from './models/user';
 import EcardService from './services/ecardService';
 import { Schedule } from './utils/schedule';
+import Schedule1 from './models/schedule';
 import { ToastAndroid } from 'react-native';
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 import { createMaterialBottomTabNavigator } from '@react-navigation/material-bottom-tabs';
+import AsyncStorage from '@react-native-community/async-storage';
+import { Alert } from 'react-native';
 
 const MyTab = createMaterialBottomTabNavigator();
 const CourseStack = createStackNavigator();
@@ -36,14 +38,14 @@ function HomeTabs() {
       keyboardHidesNavigationBar={false}
     >
 
-      <MyTab.Screen name="首页" component={HomeStackScreen} options={{
+      <MyTab.Screen name="首页" component={HomeScreen} options={{
         tabBarLabel: '首页',
         tabBarIcon: ({ color }) => (
           <MaterialIcons name="home" color={color} size={23} />
         ),
         // tabBarColor: Colors.backGreen,
       }} />
-      <MyTab.Screen name="课表" component={Table} options={{
+      <MyTab.Screen name="课表" component={TableStack} options={{
         tabBarLabel: '课表',
         tabBarIcon: ({ color }) => (
           <MaterialIcons name="event" color={color} size={23} />
@@ -70,55 +72,81 @@ function HomeTabs() {
 
 
 class App extends Component {
+  initEcard = async () => {
+    let {user}=this.state
+
+    const success = await user.ecardLogin()
+    if (success) {
+      this.setState({
+        EcardLogind: true
+      })
+      this.ecardRefresh()
+      EcardService.getCheckSign()
+    }
+    
+  }
+
+  
+  ecardRefresh=async()=>{
+    this.state.user.ecardAccount.data={}
+     this.state.user.fetchEcardData().then(()=> this.setState({}));
+     this.setState({})
+    //  console.log(this.state.user)
+ }
+
   constructor(props) {
     super(props)
 
-    this.setSchedule = (schedule) => {
-      this.setState(({
-        schedule: schedule
-      }));
-    };
-    this.setUser = (user) => {
-      this.setState(({
-        user: user
-      }));
-    };
+    this.setState = this.setState.bind(this)
 
-    this.initialSchedule = async () => {
+
+
+    this.initSchedule = async () => {
       try {
-        console.log("从本地初始化课表");
-        let schedules = await Schedule.retriveSchedules();
-        await Schedule.retriveStartDates()
-        await this.setSchedule(schedules)
-        this.setState({ schedule: schedules })
+        console.log("从本地初始化数据");
+
+        const user = await User.retrieveUser()
+
+        this.setState({
+          user
+        })
+
       } catch (error) {
-        alert(error)
+        Alert.alert('初始化课表数据失败', error)
       }
 
     }
 
+ 
 
-    this.downLoadSchedule = async (user) => {
-
-      await Schedule.setStartDates(user.grade); //存储本学期的开学日期
-      await Schedule.getAllSchedules(user)  //存储课表
-      this.setSchedule(Schedule.schedules)
-      // Schedule.saveSchedules(null)
-    }
 
     this.handleJWLogin = async (username, password) => {
-      const user = new User(username, password)
+
       try {
-        const success = await user.login()
-        if (success) {
-          this.setState({
-            JWlogined: true,
-            user
-          })
-          ToastAndroid.show("教务登录成功", ToastAndroid.SHORT)
+        let user = this.state.user
+        if (!user) {
+          user = await User.initUserbyJwAccount({ username, password })
         }
-        user.save()
-        await this.downLoadSchedule(user)
+
+        else {
+          user.jwAccount = { username, password }
+          await user.jwLogin()
+        }
+
+        ToastAndroid.show("教务登录成功", ToastAndroid.SHORT)
+
+        await this.setState({
+          JWlogined: true,
+          user: user
+        })
+
+
+        await this.state.user.initSchedule();
+
+        this.setState({})
+
+        User.saveUser(user)
+
         return true
 
       } catch (error) {
@@ -126,8 +154,6 @@ class App extends Component {
       }
 
     }
-
-
 
 
     this.setEcardData = (ecardData) => {
@@ -136,57 +162,67 @@ class App extends Component {
       })
     }
 
-    this.handleEcardLogin = async (username, passord) => {
+    this.handleEcardLogin = async (username, password) => {
       console.log("开始执行校园卡登录")
 
-      this.state.user.EcardPwd = passord
+      let { user } = this.state
+
+      if (!user) {
+        user = await User.initUserbyEcardAccount({ username, password })
+      }
+
+      else {
+
+        user.ecardAccount = { username, password }
+
+      }
+
+      console.log(user)
 
       try {
-        const success = await this.state.user.ecardLogin()
-        if (success) {
-          this.setState({
-            EcardLogind: true
-          })
-          this.setState({
-            ecardData: await EcardService.getBasicInfo()
-          })
-          this.state.user.save()
-        }
-        ToastAndroid.show('校园卡登录成功', ToastAndroid.SHORT)
+
+        if (this.state.user) await user.ecardLogin()
+
+        await this.setState({
+          EcardLogind: true,
+
+        })
+
         EcardService.getCheckSign()
+
+        if (!this.state.user) await this.setState({ user })
+        this.ecardRefresh()
+
+        User.saveUser(this.state.user)
+
+        ToastAndroid.show('校园卡登录成功', ToastAndroid.SHORT)
+
+        EcardService.getCheckSign()
+
         return true
+
       } catch (error) {
+
         throw (error)
       }
 
     }
 
-    this.initialEcard = async (user) => {
-      const success = await user.ecardLogin()
-      if (success) {
-        this.setState({
-          EcardLogind: true
-        })
-        this.setEcardData(await EcardService.getBasicInfo())
-        EcardService.getCheckSign()
-      }
-    }
+
 
     this.state = {
       user: null,
-      schedule: null,
-      setSchedule: this.setSchedule,
-      setUser: this.setUser,
-      handleEcardLogin: this.handleEcardLogin,
-      handleJWLogin: this.handleJWLogin,
       JWlogined: false,
+      handleJWLogin: this.handleJWLogin,
       EcardLogind: false,
+      handleEcardLogin: this.handleEcardLogin,
       ecardData: EcardService.reset(),
       setEcardData: this.setEcardData,
       downLoadSchedule: this.downLoadSchedule,
-      initialEcard: this.initialEcard,
-      initialSchedule:this.initialSchedule,
-      downLoadSchedule:this.downLoadSchedule
+      initEcard: this.initEcard,
+      initSchedule: this.initSchedule,
+      setState: this.setState,
+      ecardRefresh:this.ecardRefresh
     }
 
   }
@@ -194,29 +230,26 @@ class App extends Component {
   async componentDidMount() {
     try {
 
-      let user = await User.retrieve();
+      let user = await User.retrieveUser();
       console.assert(user, "找到本地用户数据")
 
       if (user) {
-        this.setUser(user)
-        this.initialSchedule()
-        user.EcardPwd && this.initialEcard(user)
+        await this.setState({ user })
+        this.initSchedule()
+
+        user.ecardAccount && this.initEcard()
+        // user.ecardAccount && this.initEcard(user)
       }
-
-
-
 
     }
 
     catch (error) {
+      alert(error)
       console.log(error);
     }
     finally {
-      SplashScreen.hide();
+
     }
-
-
-
 
   }
 
@@ -225,14 +258,12 @@ class App extends Component {
   render() {
 
     return (
-      <MenuProvider>
         <UserContext.Provider value={this.state}>
           <NavigationContainer>
             <Stack.Navigator mode='modal' screenOptions={{
               headerShown: false
             }}>
               <Stack.Screen name="Home" component={HomeTabs} ></Stack.Screen>
-
               <Stack.Screen name="课表" component={Table}
                 options={{
                   gestureDirection: 'vertical',
@@ -250,11 +281,8 @@ class App extends Component {
                 name="课程详情" component={CourseDetail} />
               <Stack.Screen name="modal" component={ModelScreen} ></Stack.Screen>
             </Stack.Navigator>
-
-
           </NavigationContainer>
         </UserContext.Provider>
-      </MenuProvider>
     );
   }
 }

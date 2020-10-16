@@ -8,6 +8,7 @@ export class SimpleInput extends Component {
         const {style,...props}=this.props;
         return (
             <TextInput
+               
                 style={[{ fontSize: 16, borderBottomColor: Colors.subTitle, borderBottomWidth: 1, marginHorizontal: 10, marginBottom: 15},style,{borderBottomWidth: 0}]}
                 blurOnSubmit={true}
                 showSoftInputOnFocus={false}

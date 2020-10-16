@@ -66,7 +66,6 @@ export const Schedule = {
             for (const d of dates) {
                 let key = d.config.data.match(/20\d{2}-20\d{2}-\d/)[0]
                 data[key] = d.data[0].mxrq
-                // console.log(data)
             }
             startDate.setMonth(data[curTerm].split('-')[0] - 1, data[curTerm].split('-')[1])
             console.log(startDate)

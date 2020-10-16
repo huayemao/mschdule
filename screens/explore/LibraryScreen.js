@@ -1,5 +1,3 @@
-// import StaticServer from 'react-native-static-server';
-
 import React, { Component } from 'react';
 import {
     Text,
@@ -16,12 +14,12 @@ import {
 
 import FontAwesome5Icon from 'react-native-vector-icons/FontAwesome5';
 import Icon from 'react-native-vector-icons/Ionicons';
-import { Colors } from '../styles/colors';
+import { Colors } from '../../styles/colors';
 import { TouchableNativeFeedback, FlatList } from 'react-native-gesture-handler';
 
-import { Button, Text as Text1, Block, Input, } from '../components'
-import LibraryService from '../services/libraryService'
-import { theme } from '../constants';
+import { Button, Text as Text1, Block, Input, } from '../../components'
+import LibraryService from '../../services/libraryService'
+import { theme } from '../../constants';
 import LinearGradient from 'react-native-linear-gradient';
 const { width, height } = Dimensions.get("window");
 

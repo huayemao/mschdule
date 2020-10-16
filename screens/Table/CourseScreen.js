@@ -1,9 +1,9 @@
 import React, { Component } from 'react'
 import { Text, Modal, View, StatusBar, ScrollView, Picker } from 'react-native'
 import { SvgXml } from 'react-native-svg';
-import SimpleInput, { Label, ConfrimBtn } from '../components/SimpleInput';
-import  screenInfo  from '../utils/screen';
-import { Colors } from '../styles/colors';
+import SimpleInput, { Label, ConfrimBtn } from '../../components/SimpleInput';
+import  screenInfo  from '../../utils/screen';
+import { Colors } from '../../styles/colors';
 import Icon from 'react-native-vector-icons/dist/FontAwesome5';
 import { TouchableNativeFeedback } from 'react-native-gesture-handler';
 import {
@@ -41,10 +41,10 @@ export default class CourseDetail extends Component {
                     ><Text>asdfa</Text>
                     </Modal> */}
 
-                    <SvgXml xml={xml2} width={screenInfo.screenWidth * 1.2} height={screenInfo.screenWidth * 1.2 * 252 / 730} />
+                    <SvgXml xml={xml2} style={{position:'relative',left:-2}} width={screenInfo.screenWidth * 1.2} height={screenInfo.screenWidth * 1.2 * 252 / 730} />
                     <Text style={{ color: 'white', position: 'absolute', fontSize: 20, bottom: '20%', left: 0, width: '100%', textAlign: 'center' }}>{params.name}</Text>
                 </View>
-                <View style={{ position: 'absolute', top: StatusBar.currentHeight + 5, right: 15 }}>
+                {/* <View style={{ position: 'absolute', top: StatusBar.currentHeight + 5, right: 15 }}>
                     <Menu renderer={renderers.ContextMenu} ref={(input) => { this.trigger = input; }}>
                         <MenuTrigger>
                             <MyIcon name='ellipsis-h'  ></MyIcon>
@@ -64,16 +64,17 @@ export default class CourseDetail extends Component {
                             </MenuOption>
                         </MenuOptions>
                     </Menu>
-                </View>
+                </View> */}
                 <Text style={{ color: 'white', position: 'absolute', fontSize: 18, top: StatusBar.currentHeight + 5, left: 0, width: '100%', height:40,textAlignVertical:'center',textAlign: 'center' }}>课程详情</Text>
                 <MyIcon onPress={() => { this.props.navigation.pop() }} name='arrow-left' style={{ position: 'absolute', top: StatusBar.currentHeight + 5, left: 15 }}></MyIcon>
-                <MyIcon onPress={() => { this.trigger.open() }} name='ellipsis-h' style={{ position: 'absolute', top: StatusBar.currentHeight + 5, right: 15 }}></MyIcon>
+                {/* <MyIcon onPress={() => { this.trigger.open() }} name='ellipsis-h' style={{ position: 'absolute', top: StatusBar.currentHeight + 5, right: 15 }}></MyIcon> */}
 
                 <View style={{ flex: 1, backgroundColor: 'white' }}>
                     <ScrollView style={{ flex: 1, width: screenInfo.screenWidth }}>
                         <View style={{ paddingHorizontal: 40, paddingVertical: 30, backgroundColor: 'white', flex: 1, }}>
                             <Label>课程名称</Label>
                             <SimpleInput
+                                numberOfLines={2}
                                 placeholder="请输入课程名称"
                                 returnKeyType="done"
                                 keyboardType='numeric'
@@ -110,15 +111,9 @@ export default class CourseDetail extends Component {
                                 placeholder="请选择周次"
                                 returnKeyType="done"
                                 keyboardType='numeric'
-                                value={params.zhouci + '周'}
+                                value={params.zhouci}
                             />
-                            <Picker
-                                selectedValue={'js'}
-                                style={{ height: 50, width: 200 }}
-                            >
-                                <Picker.Item label="Java" value="java" />
-                                <Picker.Item label="JavaScript" value="js" />
-                            </Picker>
+
                             {/* <ConfrimBtn onPress={()=>{}}>添加课程</ConfrimBtn> */}
                         </View>
 
@@ -133,6 +128,6 @@ export default class CourseDetail extends Component {
 
 export const MyIcon = (props) => (<View style={{ ...props.style, width: 40, height: 40, justifyContent: 'center', alignItems: 'center', borderRadius: 20, overflow: 'hidden' }}>
     <TouchableNativeFeedback onPress={props.onPress} style={{ width: 40, height: 40, justifyContent: 'center', alignItems: 'center' }} background={TouchableNativeFeedback.Ripple('rgba(255,255,255,0.6)', false)}>
-        <Icon name={props.name} size={18} color={'white'}></Icon>
+        <Icon name={props.name} size={props.size||18} color={props.color||'white'}></Icon>
     </TouchableNativeFeedback>
 </View>)

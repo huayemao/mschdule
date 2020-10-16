@@ -1,21 +1,54 @@
 import React, { Component } from 'react'
-import { Text, View, StyleSheet } from 'react-native'
+import { Text, View, StyleSheet, ActivityIndicator } from 'react-native'
 import { Block, Button, Text as Text1, Input } from '../../components';
 import JWService from '../../services/jwService';
 import { UserContext } from '../../contexts/userContext';
 import { TouchableNativeFeedback, FlatList } from 'react-native-gesture-handler';
 import { Colors } from '../../styles/colors';
 import Item from '../../components/item';
+import { ToastAndroid } from 'react-native';
+import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
+import { Alert } from 'react-native';
+
 export class performance extends Component {
     static contextType = UserContext
 
     constructor(props) {
         super(props)
         this.state = {
-            grade: null
+            grade: null,
+            loading: false
         };
 
     }
+
+    handleQuery = async () => {
+        if (!this.context.user.jwAccount) {
+            ToastAndroid.show("教务系统未登录", ToastAndroid.LONG)
+            return
+        }
+        this.setState({ loading: true })
+
+        try {
+            await this.context.user.jwLogin()
+            let grades = await JWService.getGrades()
+            if (!grades) ToastAndroid.show("没有成绩数据", ToastAndroid.LONG)
+            this.setState({
+                grades
+            })
+        } catch (error) {
+            Alert.alert('', error)
+        }
+        finally{
+            this.setState({loading: false })
+        }
+
+
+        
+    }
+
+
+
     render() {
         const { grades } = this.state
         return (
@@ -46,14 +79,11 @@ export class performance extends Component {
                         }}
                     >
                     </FlatList>}
-                <Button style={{ width: 50, height: 50, borderRadius: 25, backgroundColor: Colors.purple, position: 'absolute', bottom: 20, right: 20, zIdex: 1, elevation: 2, opacity: .9 }} onPress={async () => {
-                    await this.context.user.login()
-                    let grades = await JWService.getGrades()
-
-                    this.setState({ grades: grades })
-                }}>
-                    <Text1 white center bold> 查询</Text1>
+                <Button style={{ width: 50, justifyContent: 'center', alignItem: 'center', height: 50, borderRadius: 25, backgroundColor: Colors.purple, position: 'absolute', bottom: 20, right: 20, zIdex: 1, elevation: 2, opacity: .9 }} onPress={this.handleQuery}>
+                    <MaterialIcons style={{ textAlign: 'center', textAlignVertical: 'center' }} name={this.state.grades ? 'filter-list' : 'search'} size={25} color='white'></MaterialIcons>
                 </Button>
+                {this.state.loading && <ActivityIndicator size="large" style={{ backgroundColor: 'white', flex: 11 }} color={Colors.purple} />}
+
             </View>
         )
     }

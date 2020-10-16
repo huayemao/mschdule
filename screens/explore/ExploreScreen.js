@@ -4,22 +4,24 @@ import { Colors } from '../../styles/colors'
 
 import { TouchableNativeFeedback } from 'react-native-gesture-handler';
 import { createStackNavigator } from '@react-navigation/stack';
-import Library from '../library';
-import Ecard from './ecard';
+import Library from './LibraryScreen';
+import Ecard, { EcardStack } from './EcardScreen';
 import ProjectsScreen from '../projectScreen';
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 import { Alert } from 'react-native';
 import { Block, Button, Text as Text1 } from '../../components';
 import { theme } from '../../constants';
 import { UserContext } from '../../contexts/userContext';
+import SecondScreen from './SecondScreen';
 const ToolBoxStack = createStackNavigator();
 export function ToolBoxStackScreen() {
     return (
         <ToolBoxStack.Navigator>
             <ToolBoxStack.Screen name="工具箱" component={ToolBox} options={{ headerShown: false }} />
             <ToolBoxStack.Screen name="图书馆" component={Library} options={{ headerShown: false }} />
-            <ToolBoxStack.Screen name="校园卡" component={Ecard} options={{ headerShown: false }} />
+            <ToolBoxStack.Screen name="校园卡" component={EcardStack} options={{ headerShown: false }} />
             <ToolBoxStack.Screen name="卡片" component={ProjectsScreen} options={{ headerShown: false }} />
+            <ToolBoxStack.Screen name="Second" component={SecondScreen} options={{ headerShown: false }} />
         </ToolBoxStack.Navigator>
     );
 }
@@ -33,10 +35,10 @@ export class ToolBox extends Component {
                     探索
                 </Text1>
                 <View style={{ flex: 1, flexDirection: 'row', flexWrap: 'wrap', justifyContent: 'center', alignItems: 'center', backgroundColor: Colors.light }} >
-                    <Card title='图书馆' iconName='library-books' onPress={() => this.props.navigation.navigate('图书馆')}></Card>
-                    <Card title='我的教务' iconName='school' onPress={() => Alert.alert('尽请期待')}></Card>
-                    <Card title='网址导航' iconName='pageview' onPress={() => Alert.alert('尽请期待')}></Card>
-                    <Card title='校园卡服务' iconName='loop' onPress={() => Alert.alert('尽请期待')}></Card>
+                    <Card title='图书馆' iconName='library-books' onPress={() => Alert.alert('敬请期待')}></Card>
+                    <Card title='我的教务' iconName='school' onPress={() => Alert.alert('敬请期待')}></Card>
+                    <Card title='网址导航' iconName='pageview' onPress={() => Alert.alert('敬请期待')}></Card>
+                    <Card title='校园卡服务' iconName='loop' onPress={() => Alert.alert('敬请期待')}></Card>
                     {/* <Card title='校园卡服务' iconName='loop' onPress={() => this.props.navigation.navigate('校园卡')}></Card> */}
                 </View>
             </View>

@@ -1,4 +1,4 @@
-package com.mschedule;
+package xyz.seedbed.mschedule;
 
 import android.app.Application;
 import android.content.Context;
