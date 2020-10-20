@@ -4,9 +4,12 @@ import { TouchableNativeFeedback } from 'react-native-gesture-handler'
 import { Colors } from '../styles/colors';
 import { CourseStatusStyles } from '../styles/styles';
 import { Dimensions } from 'react-native';
+import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
+import { theme } from '../constants';
+import { StatusBar } from 'react-native';
 
 
-const LeftLogo = (props) => (<Text style={[styles.leftLogo, CourseStatusStyles[props.state]]}>
+export const LeftLogo = (props) => (<Text style={[styles.leftLogo, CourseStatusStyles[props.state], props.style]}>
     {props.jieci}</Text>)
 
 
@@ -19,15 +22,10 @@ export const LogoContaier = () => {
 }
 
 export const ItemContent = (props) => {
-    const { index, data } = props;
+    const { index, data, children,style } = props;
     return (
-        <View style={{ height: '100%', justifyContent: "center", width: Dimensions.get('window').width - 70 }}>
-            <Text numberOfLines={2} style={styles.courseName}>{data.title}</Text>
-            {data.sub1 &&<Text style={styles.classRoom}>{data.sub1} {data.seperator||' '} {data.sub2||' '}</Text>}
-            {data.sub3 && <Text style={styles.classRoom}>{data.sub3}
-                {data.sub4 && <Text>{data.seperator} {data.sub4}</Text>}
-            </Text>}
-            <Text style={styles.zhouci}>{data.abs}</Text>
+        <View style={{ height: '100%', justifyContent: "center", flex: 6,...style }}>
+            {children}
         </View>
     );
 }
@@ -36,16 +34,25 @@ export const ItemContent = (props) => {
 
 
 export default class Item extends Component {
+    static Title = (props) => {
+        return <Text numberOfLines={2} style={styles.courseName}>{props.children}</Text>
+    }
+    static SubTitle = (props) => {
+        return (<Text style={styles.classRoom}>{props.children}</Text>)
+    }
     render() {
         const { index, data } = this.props;
         return (
-            <View>
-                
+            <View >
                 <ItemContainer {...this.props}>
-                    <View style={{ height: '100%', justifyContent: "center" }}>
-                        <LeftLogo jieci={data.value} state={data.state}></LeftLogo>
+                    {!this.props.noLogo &&
+                        <View style={{ height: '100%', justifyContent: "center" }}>
+                            <LeftLogo jieci={data.value} state={data.state}></LeftLogo>
+                        </View>}
+                    <ItemContent style={{paddingLeft:this.props.noLogo?theme.sizes.padding:'auto'}} {...this.props} />
+                    <View style={{ height: '100%', justifyContent: "center", flex: 1 }}>
+                        <MaterialIcons name={'navigate-next'} size={22} color={Colors.subTitle}></MaterialIcons>
                     </View>
-                    <ItemContent {...this.props} />
                 </ItemContainer>
             </View>
         )
@@ -59,7 +66,7 @@ export const ItemContainer = (props) => {
     const { index } = props;
     return (
         <TouchableNativeFeedback key={index} background={TouchableNativeFeedback.Ripple('#BABABB', false)} useForeground={true} onPress={props.onPress}>
-            <View style={{...styles.item,...props.containerStyle}}>
+            <View style={{ ...styles.item, ...props.containerStyle }}>
                 {props.children}
             </View>
         </TouchableNativeFeedback>
@@ -73,9 +80,7 @@ const styles = StyleSheet.create({
         flexDirection: 'row',
         justifyContent: 'flex-start',
         backgroundColor: Colors.light,
-    
         // borderBottomColor: '#f5f5f5',
-        // borderBottomWidth: 1.5,
         height: 86,
         // flexWrap: 'wrap'
     },

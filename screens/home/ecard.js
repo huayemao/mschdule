@@ -111,7 +111,7 @@ export default class Ecard extends Component {
                             }} />
 
                         } >
-                        <View style={{ backgroundColor: Colors.light, flex: 1, position: 'relative', justifyContent: 'center' }}>
+                        <View style={{ backgroundColor: Colors.light, flex: 1, position: 'relative', justifyContent: 'center',paddingHorizontal:theme.sizes.padding }}>
                             <Factors
                                 style={{ alignItems: 'center' }}
                                 data={[
@@ -184,10 +184,10 @@ export const InfoItem = (props) => (
     </View>)
 
 
-const Value = (props) => {
+export const Value = (props) => {
 
     if (props.children)
-        return (<Text>{props.children}</Text>)
+        return (<Text style={props.style}>{props.children}</Text>)
     else return (
         <View style={{ width: 40, height: 40 }}>
             <Loading1></Loading1>
@@ -195,19 +195,28 @@ const Value = (props) => {
     )
 }
 
-const Factors = (props) => {
+export const Factors = (props) => {
     return (
-        <View style={[{ flexDirection: 'row', justifyContent: 'space-around', alignItems: 'center', marginHorizontal: 5 }, props.style]}>
+        <View style={[{ flexDirection: props.vertical ? 'column' : 'row', justifyContent: props.vertical ? 'center' : 'space-between', alignItems: props.vertical ? 'stretch' : 'center', marginHorizontal: 5 }, props.style]}>
             {
                 props.data.map((item, index) => {
+                    if (props.oneline)
+                        return (
+                            <View style={{ flexDirection: 'row', alignItems: 'center', margin: props.vertical ? 0 : 5 }} key={index} >
+                                {!props.noLogo && <View style={{ height: 10, width: 10, borderRadius: 2, marginRight: 5, backgroundColor: index % 3 == 0 ? Colors.foreGreen : index % 3 == 1 ? Colors.foreBlue : Colors.forRed }}></View>} 
+                                <Text style={{ color: Colors.subTitle, fontSize: 12 }}>{item.title}</Text>
+                                <Text style={{ paddingLeft: 15, fontFamily: 'Futura', fontSize: 16, height: 24, paddingTop: 2, color: Colors.title }}><Value>{item.value}</Value></Text>
+                            </View>
+                        )
 
-                    return (
-                        <View style={{ margin: 5 }} key={index}>
-                            <View style={{ position: 'absolute', bottom: 24, left: 0, height: 10, width: 10, borderRadius: 2, marginRight: 5, backgroundColor: index % 3 == 0 ? Colors.foreGreen : index % 3 == 1 ? Colors.foreBlue : Colors.forRed }}></View>
-                            <Text style={{ paddingLeft: 15, fontFamily: 'Futura', fontSize: 20, height: 40, paddingTop: 15, color: Colors.title }}><Value>{item.value}</Value></Text>
-                            <Text style={{ color: Colors.subTitle, fontSize: 12 }}>{item.title}</Text>
-                        </View>
-                    )
+
+                    else
+                        return (
+                            <View style={{}} key={index}>
+                                <View style={{ position: 'absolute', bottom: 24, left: 0, height: 10, width: 10, borderRadius: 2, marginRight: 5, backgroundColor: index % 3 == 0 ? Colors.foreGreen : index % 3 == 1 ? Colors.foreBlue : Colors.forRed }}></View>
+                                <Text style={{ paddingLeft: 15, fontFamily: 'Futura', fontSize: 16, height: 24, paddingTop: 2, color: Colors.title }}><Value>{item.value}</Value></Text>
+                                <Text style={{ color: Colors.subTitle, fontSize: 12 }}>{item.title}</Text>
+                            </View>)
                 })
             }
         </View>

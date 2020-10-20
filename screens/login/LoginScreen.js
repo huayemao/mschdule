@@ -13,10 +13,14 @@ import {
 
 import MaterialIcon from 'react-native-vector-icons/MaterialIcons';
 import { Button, Block, Input, Text } from "../../components";
+import svgXmls from "../../components/svgXmls";
 import { theme } from "../../constants";
 import { UserContext } from "../../contexts/userContext";
 import User from "../../models/user";
 import { Schedule } from "../../utils/schedule";
+import { Colors } from '../../styles/colors'
+
+import { SvgXml } from "react-native-svg";
 
 const VALID_EMAIL = "";
 const VALID_PASSWORD = "";
@@ -371,6 +375,20 @@ export default class Login extends Component {
         );
     }
 }
+
+
+
+export const  NotLogined = ({title,xml,type,navigation,...props}) => (
+    <View style={{ justifyContent: 'space-around', flex: 1, paddingHorizontal: theme.sizes.padding, paddingVertical: theme.sizes.padding * 2, backgroundColor: Colors.light, alignItems: 'center' }}
+    >
+        <Text gray caption>{title}</Text>
+        <SvgXml xml={xml} width="200" height="200" />
+        <Button style={{ width: 200, height: 45 }} gradient onPress={() => navigation.navigate('modal', { type: type})}>
+            <Text white center bold> 去登录</Text>
+        </Button>
+    </View>
+)
+
 
 
 const styles = StyleSheet.create({

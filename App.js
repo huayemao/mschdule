@@ -4,7 +4,7 @@ import 'react-native-gesture-handler';
 import { NavigationContainer } from '@react-navigation/native';
 import { MenuProvider } from 'react-native-popup-menu';
 import { HomeScreen } from './screens/home/HomeScreen';
-import Settings from './screens/settings/SettingsScreen';
+import Settings, { SettingsStack } from './screens/settings/SettingsScreen';
 import { Colors } from './styles/colors';
 import { ToolBoxStackScreen } from './screens/explore/ExploreScreen';
 import screenInfo from './utils/screen'
@@ -58,7 +58,7 @@ function HomeTabs() {
           <MaterialIcons name="apps" color={color} size={23} />
         ),
       }} />
-      <MyTab.Screen name="设置" component={Settings} options={{
+      <MyTab.Screen name="设置" component={SettingsStack} options={{
         tabBarLabel: '设置',
         tabBarIcon: ({ color }) => (
           <MaterialIcons name="list" color={color} size={23} />
@@ -136,7 +136,7 @@ class App extends Component {
         ToastAndroid.show("教务登录成功", ToastAndroid.SHORT)
 
         await this.setState({
-          JWlogined: true,
+          JWLogined: true,
           user: user
         })
 
@@ -212,7 +212,7 @@ class App extends Component {
 
     this.state = {
       user: null,
-      JWlogined: false,
+      JWLogined: false,
       handleJWLogin: this.handleJWLogin,
       EcardLogind: false,
       handleEcardLogin: this.handleEcardLogin,
@@ -234,6 +234,8 @@ class App extends Component {
       console.assert(user, "找到本地用户数据")
 
       if (user) {
+        console.log(new Date().toLocaleDateString());
+        console.log(user);
         await this.setState({ user })
         this.initSchedule()
 

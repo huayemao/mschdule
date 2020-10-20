@@ -13,6 +13,9 @@ import { Block, Button, Text as Text1 } from '../../components';
 import { theme } from '../../constants';
 import { UserContext } from '../../contexts/userContext';
 import SecondScreen from './SecondScreen';
+import MyPicker from '../../components/MyPicker';
+import { Picker } from 'react-native';
+import NavScreen from './NavScreen';
 const ToolBoxStack = createStackNavigator();
 export function ToolBoxStackScreen() {
     return (
@@ -20,6 +23,7 @@ export function ToolBoxStackScreen() {
             <ToolBoxStack.Screen name="工具箱" component={ToolBox} options={{ headerShown: false }} />
             <ToolBoxStack.Screen name="图书馆" component={Library} options={{ headerShown: false }} />
             <ToolBoxStack.Screen name="校园卡" component={EcardStack} options={{ headerShown: false }} />
+            <ToolBoxStack.Screen name="网址导航" component={NavScreen} options={{ headerShown: false }} />
             <ToolBoxStack.Screen name="卡片" component={ProjectsScreen} options={{ headerShown: false }} />
             <ToolBoxStack.Screen name="Second" component={SecondScreen} options={{ headerShown: false }} />
         </ToolBoxStack.Navigator>
@@ -34,14 +38,21 @@ export class ToolBox extends Component {
                 <Text1 h1 bold style={{ padding: theme.sizes.base }} padding={[StatusBar.currentHeight, theme.sizes.base]}>
                     探索
                 </Text1>
+
+
+
                 <View style={{ flex: 1, flexDirection: 'row', flexWrap: 'wrap', justifyContent: 'center', alignItems: 'center', backgroundColor: Colors.light }} >
                     <Card title='图书馆' iconName='library-books' onPress={() => Alert.alert('敬请期待')}></Card>
                     <Card title='我的教务' iconName='school' onPress={() => Alert.alert('敬请期待')}></Card>
-                    <Card title='网址导航' iconName='pageview' onPress={() => Alert.alert('敬请期待')}></Card>
+                    <Card title='网址导航' iconName='pageview' onPress={() => this.props.navigation.navigate('网址导航')}></Card>
+                    {/* <Card title='网址导航' iconName='pageview' onPress={() => Alert.alert('敬请期待')}></Card> */}
                     <Card title='校园卡服务' iconName='loop' onPress={() => Alert.alert('敬请期待')}></Card>
                     {/* <Card title='校园卡服务' iconName='loop' onPress={() => this.props.navigation.navigate('校园卡')}></Card> */}
                 </View>
+
+
             </View>
+
         )
     }
 }

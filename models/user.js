@@ -60,11 +60,8 @@ export default class User {
 
     set ecardAccount(ecardAccount) {
         if (!ecardAccount) return
-        ecardAccount.data={}
+        ecardAccount.data = {}
         this._ecardAccount = ecardAccount
-        // if (this._jwAccount.username) return
-        // const { username } = ecardAccount
-        // this.jwAccount = { username }
     }
 
     get ecardAccount() {
@@ -105,9 +102,7 @@ export default class User {
         try {
             console.log();
             let data = ['jwAccount', 'ecardAccount', 'name', 'schedule'].map(key => {
-
                 return [key, JSON.stringify(user[key]) || '']
-
             })
 
             console.log(data);
@@ -133,8 +128,6 @@ export default class User {
             let obj = {}
             const values = await AsyncStorage.multiGet(['jwAccount', 'ecardAccount', 'name', 'schedule'])
             // [ ['@MyApp_user', 'myUserValue'], ['@MyApp_key', 'myKeyValue'] ]
-
-            console.log('sadfsafsad', values);
 
             if (values[0][1] == null && values[1][1] === null) {
                 return null
@@ -166,6 +159,7 @@ export default class User {
         }
     }
 
+    
     static async initUserbyEcardAccount(ecardAccount) {
         const { username, password } = ecardAccount
         try {
@@ -178,9 +172,6 @@ export default class User {
     }
 
 
-
-
-
     setSchedule(schedule) {
         try {
             AsyncStorage.setItem('schedule', JSON.stringify({ schedule }))
@@ -189,10 +180,10 @@ export default class User {
         }
     }
 
-  async  fetchEcardData(){
-      const data= await EcardService.getBasicInfo()
-      this.ecardAccount.data=data;
-      if(!this.name) this.name = data.name
+    async fetchEcardData() {
+        const data = await EcardService.getBasicInfo()
+        this.ecardAccount.data = data;
+        if (!this.name) this.name = data.name
     }
 
 }

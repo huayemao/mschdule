@@ -17,11 +17,11 @@ import { SvgXml } from 'react-native-svg';
 import screenInfo from '../../utils/screen';
 import Xmls from '../../components/svgXmls'
 import User from '../../models/user';
-import Login from '../login/LoginScreen';
+import Login, { NotLogined } from '../login/LoginScreen';
 import { Block, Button, Text as Text1 } from '../../components';
 import { theme } from '../../constants';
 import { UserContext } from '../../contexts/userContext';
-import performance from './Grades';
+import performance, { GradesModal } from './Grades';
 import Item from '../../components/item';
 
 import Schedule1 from '../../models/schedule'
@@ -32,10 +32,25 @@ const Tab = createMaterialTopTabNavigator();
 
 export function HomeScreen() {
     return (
-        <HomeStack.Navigator >
-            <HomeStack.Screen name="主页" component={Home} options={{ headerShown: false }} />
-            <HomeStack.Screen name="课程详情" component={ClassDetial} options={{ headerShown: false }} />
-            <HomeStack.Screen name="校园卡" component={HomeEcardStack} />
+        <HomeStack.Navigator
+            screenOptions={{
+                mode: 'modal',
+                cardStyle: {
+                    backgroundColor: "transparent",
+                    opacity: 0.98
+                },
+                headerShown: false
+            }}
+        >
+            <HomeStack.Screen name="主页" component={Home} />
+            <HomeStack.Screen name="课程详情" component={ClassDetial} />
+            <HomeStack.Screen name="gradesModal" component={GradesModal}
+                options={{
+                    gestureEnabled: true,
+                    gestureResponseDistance: {
+                        vertical: 300
+                    }
+                }} />
 
         </HomeStack.Navigator>
     );
@@ -96,46 +111,46 @@ export class Home extends Component {
         const { user } = this.context
         return (
             <>
-                <SafeAreaView style={{ flex: 1,backgroundColor:Colors.light }}>
+                <SafeAreaView style={{ flex: 1, backgroundColor: Colors.light }}>
                     <StatusBar translucent={true} barStyle='dark-content' backgroundColor={'transparent'} />
                     {/* <KeyboardAvoidingView style={{ flex: 1, backgroundColor: Colors.light }} behavior='height' > */}
-                        {this.renderTop()}
-                        <Tab.Navigator
-                            tabBarOptions={{
-                                activeTintColor: Colors.purple,
-                                indicatorStyle: {
-                                    backgroundColor: Colors.purple,
-                                    width: 6,
-                                    borderRadius: 3,
-                                    left: 47,
-                                    height: 3,
-                                },
-                                labelStyle: { fontSize: 15, },
-                                tabStyle: { width: 100, paddingTop: 0, paddingBottom: 2 },
-                                style: { backgroundColor: 'white', paddingTop: 5 },
+                    {this.renderTop()}
+                    <Tab.Navigator
+                        tabBarOptions={{
+                            activeTintColor: Colors.purple,
+                            indicatorStyle: {
+                                backgroundColor: Colors.purple,
+                                width: 6,
+                                borderRadius: 3,
+                                left: 47,
+                                height: 3,
+                            },
+                            labelStyle: { fontSize: 15, },
+                            tabStyle: { width: 100, paddingTop: 0, paddingBottom: 2 },
+                            style: { backgroundColor: 'white', paddingTop: 5 },
 
-                            }}>
-                            <Tab.Screen name="今日课程" component={TodayCourse} options={{
-                                tabBarLabel: ({ focused, color }) => {
-                                    return (<View style={{ width: '100%', justifyContent: 'center', borderRadius: 10, backgroundColor: focused ? Colors.light : 'white' }}>
-                                        <Text style={{ color: focused ? Colors.purple : Colors.subTitle, width: 85, height: 35, textAlign: 'center', textAlignVertical: 'center', fontFamily: 'Futura', fontSize: focused ? 15 : 14 }}>今日课程</Text></View>)
-                                }
-                            }} />
-                            <Tab.Screen name="校园卡" component={HomeEcardStack} options={{
-                                tabBarLabel: ({ focused, color }) => {
-                                    return (<View style={{ width: '100%', justifyContent: 'center', borderRadius: 10, backgroundColor: focused ? Colors.light : 'white' }}>
-                                        <Text style={{ color: focused ? Colors.purple : Colors.subTitle, width: 85, height: 35, textAlign: 'center', textAlignVertical: 'center', fontFamily: 'Futura', fontSize: focused ? 15 : 14 }}>校园卡</Text></View>)
-                                }
-                            }} />
-                            <Tab.Screen name="成绩查询" component={performance} options={{
-                                tabBarLabel: ({ focused, color }) => {
-                                    return (<View style={{ width: '100%', justifyContent: 'center', borderRadius: 10, backgroundColor: focused ? Colors.light : 'white' }}>
-                                        <Text style={{ color: focused ? Colors.purple : Colors.subTitle, width: 85, height: 35, textAlign: 'center', textAlignVertical: 'center', fontFamily: 'Futura', fontSize: focused ? 15 : 14 }}>成绩查询</Text></View>)
-                                }
-                            }} />
+                        }}>
+                        <Tab.Screen name="今日课程" component={TodayCourse} options={{
+                            tabBarLabel: ({ focused, color }) => {
+                                return (<View style={{ width: '100%', justifyContent: 'center', borderRadius: 10, backgroundColor: focused ? Colors.light : 'white' }}>
+                                    <Text style={{ color: focused ? Colors.purple : Colors.subTitle, width: 85, height: 35, textAlign: 'center', textAlignVertical: 'center', fontFamily: 'Futura', fontSize: focused ? 15 : 14 }}>今日课程</Text></View>)
+                            }
+                        }} />
+                        <Tab.Screen name="校园卡" component={HomeEcardStack} options={{
+                            tabBarLabel: ({ focused, color }) => {
+                                return (<View style={{ width: '100%', justifyContent: 'center', borderRadius: 10, backgroundColor: focused ? Colors.light : 'white' }}>
+                                    <Text style={{ color: focused ? Colors.purple : Colors.subTitle, width: 85, height: 35, textAlign: 'center', textAlignVertical: 'center', fontFamily: 'Futura', fontSize: focused ? 15 : 14 }}>校园卡</Text></View>)
+                            }
+                        }} />
+                        <Tab.Screen name="成绩查询" component={performance} options={{
+                            tabBarLabel: ({ focused, color }) => {
+                                return (<View style={{ width: '100%', justifyContent: 'center', borderRadius: 10, backgroundColor: focused ? Colors.light : 'white' }}>
+                                    <Text style={{ color: focused ? Colors.purple : Colors.subTitle, width: 85, height: 35, textAlign: 'center', textAlignVertical: 'center', fontFamily: 'Futura', fontSize: focused ? 15 : 14 }}>成绩查询</Text></View>)
+                            }
+                        }} />
 
 
-                        </Tab.Navigator>
+                    </Tab.Navigator>
                     {/* </KeyboardAvoidingView> */}
                 </SafeAreaView>
             </>
@@ -148,8 +163,9 @@ export default Home
 
 
 const getCoursesToday = (courses, curWeek) => {
+    console.log(courses)
     return courses.filter(
-        course => course.weeks.indexOf(curWeek) !== -1 &
+        course => (course.weeks.indexOf(curWeek) !== -1||course.weeks===curWeek) &
             course.xq == Schedule.curDate.getDay()
     )
         .sort((a, b) => a.jc - b.jc);
@@ -200,7 +216,6 @@ export class TodayCourse extends Component {
                         <Text style={styles.count}>{todayCourse instanceof Array && todayCourse.length || 0} courses</Text>
                     </View>
                     {todayCourse instanceof Array && todayCourse.length === 0 && <NoCourse />}
-
                     <View style={{ flex: 1 }}>
                         <ScrollView style={{ backgroundColor: Colors.light }} >
                             {todayCourse instanceof Array && todayCourse.length > 0 && todayCourse.map((c, index) => {
@@ -213,7 +228,15 @@ export class TodayCourse extends Component {
                                     sub3: c.zhouci,
                                     state: Schedule.mapTime(c.jc - 1)
                                 }
-                                return (<Item onPress={() => this.props.navigation.navigate('课程详情', c)} index={index} data={data} key={index} {...this.props}></Item>)
+                                return (
+                                    <Item onPress={() => this.props.navigation.navigate('课程详情', c)} index={index} data={data} key={index} {...this.props}>
+                                        <View style={{ justifyContent: 'center' }}>
+                                            <Item.Title>{data.title}</Item.Title>
+                                            <Item.SubTitle>{data.sub1.length > 0 ? data.sub1 : '-'}</Item.SubTitle>
+                                            <Item.SubTitle>{data.sub3.trim()}</Item.SubTitle>
+
+                                        </View>
+                                    </Item>)
                             }
                             )}
                         </ScrollView>
@@ -222,8 +245,8 @@ export class TodayCourse extends Component {
         }
 
 
-        else if (!this.context.JWlogined) return (
-            <NotLogined {...this.props}></NotLogined>
+        else if (!this.context.JWLogined) return (
+            <NotLogined navigation={this.props.navigation} type={'JW'} title={'您好像还没有登录哦，查询课表需要使用教务课表登录，只需登录一次，即可一键更新课表，赶快试试吧'} xml={Xmls.xml}></NotLogined>
         )
 
         else {
@@ -235,16 +258,7 @@ export class TodayCourse extends Component {
 }
 
 
-const NotLogined = (props) => (
-    <View style={{ justifyContent: 'space-around', flex: 1, paddingHorizontal: theme.sizes.padding, paddingVertical: theme.sizes.padding * 2, backgroundColor: Colors.light, alignItems: 'center' }}
-    >
-        <Text1 gray caption>您好像还没有登录哦，获取课表数据需要使用教务密码登录</Text1>
-        <SvgXml xml={Xmls.xml} width="200" height="200" />
-        <Button style={{ width: 200, height: 45 }} gradient onPress={() => props.navigation.navigate('modal', { type: 'JW' })}>
-            <Text1 white center bold> 去登录</Text1>
-        </Button>
-    </View>
-)
+
 
 const NoCourse = () => (
     <View style={[styles.noCourse, { alignItems: 'center', justifyContent: 'space-around' }]}>

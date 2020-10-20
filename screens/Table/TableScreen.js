@@ -16,6 +16,8 @@ import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 import { createStackNavigator } from '@react-navigation/stack';
 import Schedule1 from '../../models/schedule'
 import ModalView from '../../components/modalview';
+import MyPicker from '../../components/MyPicker';
+import { NotLogined } from '../login/LoginScreen';
 
 
 const { screenHeight, screenWidth } = screenInfo;
@@ -81,18 +83,16 @@ const TableModal = (props) => {
         const { settings } = route.params
         return <ModalView position='bottom' color={Colors.purple} backgroundColor='#fff'>
             <View style={{ height: "50%", width: '100%', position: 'relative', paddingHorizontal: theme.sizes.padding, paddingVertical: theme.sizes.padding * 2, backgroundColor: "#fff", justifyContent: "center" }}>
-                <Text1 center>{settings.title}</Text1>               
-                <Text1 center>{settings.value}</Text1>               
+                <Text1 center>{settings.title}</Text1>
+                <Text1 center>{settings.value}</Text1>
             </View>
         </ModalView>
 
     }
 
 
-
-
     else {
-        const { courses } = props.route.params
+        const { courses } = route.params
         const { navigation } = props
 
         return (
@@ -124,6 +124,16 @@ const TableModal = (props) => {
     }
 }
 
+
+
+
+
+
+
+
+
+
+
 export default class Table extends Component {
 
     constructor(props) {
@@ -146,7 +156,8 @@ export default class Table extends Component {
         if (!user) return
         if (user.schedule)
             this.setState({
-                selectedWeek: user.schedule.getCurWeek()
+                selectedWeek: user.schedule.getCurWeek(),
+                pages: new Array(user.schedule.maxWeek+1).fill(1)
             })
     }
 
@@ -188,11 +199,12 @@ export default class Table extends Component {
 
         for (let course of coursesToShow) {
             let index = course.xq + (course.jc - 1) * 7 - 1
-            if (index > 0 && index < 43) {
+            if (index >= 0 && index < 43) {
                 cells[index] = [...cells[index], course];
             }
         }
 
+ 
 
         return (
             <View key={key}>
@@ -236,79 +248,56 @@ export default class Table extends Component {
     render() {
         try {
             const { user } = this.context
-            const weeks = Array(26).fill(0);
+          
 
             console.log(user);
 
             if (!user) {
-                return (<View style={{ justifyContent: 'space-around', flex: 1, paddingHorizontal: theme.sizes.padding, paddingVertical: theme.sizes.padding * 2, backgroundColor: Colors.light, alignItems: 'center' }}
-                >
-                    <Text1 gray caption>您好像还没有登录哦，获取课表数据需要使用教务密码登录</Text1>
-                    <SvgXml xml={Xmls.xml} width="200" height="200" />
-                    <Button style={{ width: 200, height: 45 }} gradient onPress={() => this.props.navigation.navigate('modal', { type: 'JW' })}>
-                        <Text1 white center bold> 去登录</Text1>
-                    </Button>
-                </View>)
+                return (<NotLogined navigation={this.props.navigation} type={'JW'} title={'您好像还没有登录哦，查询课表需要使用教务课表登录，只需登录一次，即可一键更新课表，赶快试试吧'} xml={Xmls.xml}></NotLogined>
+                )
             }
 
-
-
-
             else {
-                // console.log("dsfsd");
                 return (
                     <View style={{ backgroundColor: Colors.light, flex: 1 }}>
                         <View style={{ flexDirection: 'row', flex: 1.2, }}>
                             <View style={{ flex: 1.5, paddingTop: StatusBar.currentHeight, }}>
-                                <Picker
+                                <MyPicker
+                                    textAlwaysCenter={true}
                                     prompt={"选择学期"}
-                                    ref={r => this.Picker1 = r}
+                                    label={this.state.term}
                                     selectedValue={this.state.term}
-                                    style={{ color: 'transparent', backgroundColor: 'transparent' }}
+                                    textStyle={{ fontSize: 18, textAlign: 'center', lineHeight: 20, textAlignVertical: 'center', color: Colors.purple, fontFamily: 'Futura' }}
                                     onValueChange={
                                         (val) => this.setState({ term: val })
                                     }
+
                                 >
                                     <Picker.Item label="当前学期" value={Schedule.curTerm} />
                                     {user.schedule.terms && user.schedule.terms.map((e) => <Picker.Item label={e} key={e} value={e} />)}
-
-                                </Picker>
-                                <View style={{ position: 'absolute', paddingTop: StatusBar.currentHeight, top: 0, left: 0, right: 0, bottom: 0, justifyContent: 'center', alignItems: 'center', zIndex: -10, borderRadius: 5 }}>
-                                    <Text1 style={{ fontSize: 18, textAlign: 'center', lineHeight: 20, textAlignVertical: 'center', color: Colors.purple, fontFamily: 'Futura', zIndex: 1 }}>
-                                        {this.state.term}
-                                    </Text1>
-                                    <View style={{ position: 'absolute', right: 3, justifyContent: 'center', paddingTop: StatusBar.currentHeight }}>
-                                        <MaterialIcons size={18} color={Colors.purple} style={{ marginVertical: 'auto', borderRadius: 3, paddingVertical: 'auto' }} name='expand-more' ></MaterialIcons>
-                                    </View>
-                                </View>
+                                </MyPicker>
                             </View>
-                            <View style={{ flex: 1, paddingTop: StatusBar.currentHeight }}>
-                                <Picker
+
+                            <View style={{ flex: 1, paddingTop: StatusBar.currentHeight, }}>
+                                <MyPicker
+                                    textAlwaysCenter={true}
                                     prompt={"选择周次"}
-                                    ref={r => this.Picker = r}
+                                    label={getWeekStr(this.state.selectedWeek)}
                                     selectedValue={this.state.selectedWeek}
-                                    style={{ color: 'transparent', backgroundColor: 'transparent' }}
+                                    textStyle={{ fontSize: 18, textAlign: 'center', lineHeight: 20, textAlignVertical: 'center', color: Colors.purple, fontFamily: 'Futura', zIndex: 1 }}
                                     onValueChange={
                                         (val, pos) => {
                                             this.setState({ selectedWeek: val })
                                             this.viewPager.setPage(val)
                                         }
                                     }
+
                                 >
                                     <Picker.Item label="当前周" value={user.schedule.getCurWeek()} />
-                                    {weeks.map((e, index) => (<Picker.Item key={index} label={getWeekStr(index)} value={index} />))}
-                                </Picker>
-
-                                <View style={{ position: 'absolute', paddingTop: StatusBar.currentHeight, top: 0, left: 0, right: 0, bottom: 0, justifyContent: 'center', alignItems: 'center', zIndex: -10, borderRadius: 5 }}>
-                                    <Text1 style={{ fontSize: 18, textAlign: 'center', lineHeight: 20, textAlignVertical: 'center', color: Colors.purple, fontFamily: 'Futura', zIndex: 1 }}>
-                                        {`第${this.state.selectedWeek}周`}
-                                    </Text1>
-                                    {/* <MaterialIcons.Button color={Colors.purple} backgroundColor='transparent' style={{ flexDirection: 'row-reverse' }} name='expand-more'></MaterialIcons.Button> */}
-                                    <View style={{ position: 'absolute', right: 3, justifyContent: 'center', paddingTop: StatusBar.currentHeight }}>
-                                        <MaterialIcons size={18} color={Colors.purple} style={{ marginVertical: 'auto', paddingVertical: 'auto' }} name='expand-more' ></MaterialIcons>
-                                    </View>
-                                </View>
+                                    {this.state.pages.map((e, index) => (<Picker.Item key={index} label={getWeekStr(index)} value={index} />))}
+                                </MyPicker>
                             </View>
+
                             <View style={{ flex: 1.5, paddingTop: StatusBar.currentHeight, flexDirection: 'row', justifyContent: 'center', alignItems: 'center', backgroundColor: Colors.light }}>
                                 <TouchableNativeFeedback style={{ paddingHorizontal: 10, }} onPress={() => { this.props.navigation.navigate("Modal") }}>
                                     <MaterialIcons name='info-outline' size={25} color={Colors.purple}></MaterialIcons>
@@ -442,13 +431,15 @@ const date = now.getDate()
 
 
 const TableHeader = function (props) {
+
     const { weekOffset, day } = props
+    console.log(weekOffset);
     const arr = ['周一', '周二', '周三', '周四', '周五', '周六', '周日'];
     return (
         <View style={styles.container}>
             {arr.map((day, index) => {
                 now.setMonth(month)
-                now.setDate(date + index + 1 - Schedule.day + weekOffset * 7)
+                now.setDate(date + index + 1 - (Schedule.day===0?7:Schedule.day) + weekOffset * 7)
                 let doNotDisplay = false
                 if ((now - Schedule.startDate) / 1000 / 60 / 60 / 24 <= 0) doNotDisplay = true
                 if (props.state.term != Schedule1.curTerm) doNotDisplay = true

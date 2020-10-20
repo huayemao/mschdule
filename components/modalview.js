@@ -7,6 +7,7 @@ import { Colors } from '../styles/colors';
 
 
 const Container = styled.View`
+
 flex:1;
 justify-content: ${props => props.position1 || 'flex-end'};
 `
@@ -30,6 +31,19 @@ border-bottom-right-radius: 5px;
 
 
 class ModalView extends Component {
+  static Title = (props) => {
+    return (
+      <Text style={{
+        ...props.style,
+        fontWeight: 'bold',
+        fontSize: 18,
+        color: Colors.purple,
+        letterSpacing: 1.1,
+        textAlign: 'center'
+      }}>{props.children}</Text>
+    )
+  }
+
   render() {
     try {
       let { position, backgroundColor, color, children } = this.props;
@@ -46,7 +60,8 @@ class ModalView extends Component {
             <Shape style={{ elevation: 2 }} color={Colors.purple}>
             </Shape>
           </Header>
-          <View style={{ paddingHorizontal: theme.sizes.padding,backgroundColor }}>
+
+          <View style={{ paddingVertical: 20, backgroundColor }}>
             {children}
           </View>
 
