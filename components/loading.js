@@ -1,10 +1,8 @@
 import React, { Component } from 'react'
 import { View, Text } from 'react-native'
 import LottieView from 'lottie-react-native'
-import { Colors } from '../styles/colors'
 import { TouchableNativeFeedback } from 'react-native-gesture-handler'
-
-
+import { theme } from '../constants'
 export default class Loading extends Component {
     render() {
         return (
@@ -68,8 +66,8 @@ export const Flower=(props)=> (
                         autoPlay></LottieView>
 
                 </View>
-                <Text style={{ zIndex: 10, color: Colors.forRed, fontSize: 20, fontWeight: '700' }}>生日快乐呀</Text>
-                <Text style={{ fontSize: 16, padding: 10, color: Colors.subTitle }}>  今天是秋秋20岁生日了耶，皓皓整理了秋秋和他在一起度过的20件小事，快去看看吧</Text>
+                <Text style={{ zIndex: 10, color: theme.colors.forRed, fontSize: 20, fontWeight: '700' }}>生日快乐呀</Text>
+                <Text style={{ fontSize: 16, padding: 10, color: theme.colors.subTitle }}>  今天是秋秋20岁生日了耶，皓皓整理了秋秋和他在一起度过的20件小事，快去看看吧</Text>
                 <TouchableNativeFeedback onPress={props.start} background={TouchableNativeFeedback.Ripple('rgba(255,255,255,0.6)', false)}>
                     <View style={{  paddingHorizontal:10,backgroundColor: '#544BBB', borderRadius: 4, margin: 15, marginVertical: 20 }}>
                         <Text style={{ textAlign: 'center', textAlignVertical: 'center', height: 38, color: 'white', letterSpacing: 2 }}>点击开始</Text>

@@ -1,7 +1,7 @@
 // just copy this code from the driving repo :)
 import React, { Component } from "react";
 import { Text, StyleSheet } from "react-native";
-
+import PropTypes from 'prop-types';
 import { theme } from "../constants";
 
 export default class Typography extends Component {
@@ -89,6 +89,49 @@ export default class Typography extends Component {
   }
 }
 
+
+
+
+Typography.propTypes = {
+  h1: PropTypes.bool,
+  h2: PropTypes.bool,
+  h3: PropTypes.bool,
+  title: PropTypes.bool,
+  body: PropTypes.bool,
+  caption: PropTypes.bool,
+  header: PropTypes.bool,
+  small: PropTypes.bool,
+  size: PropTypes.number,
+  align: PropTypes.oneOf(["center", "auto", "left", "right", "justify"]),
+  // styling
+  regular: PropTypes.bool,
+  bold: PropTypes.bool,
+  semibold: PropTypes.bool,
+  medium: PropTypes.bool,
+  light:PropTypes.bool,
+
+  center:PropTypes.bool,
+  right:PropTypes.bool,
+  // spacing, // letter-spacing
+  // height, // line-height
+  // // colors
+  // color,
+  accent:PropTypes.bool,
+  primary:PropTypes.bool,
+  secondary:PropTypes.bool,
+  tertiary:PropTypes.bool,
+  black:PropTypes.bool,
+  white:PropTypes.bool,
+  gray:PropTypes.bool,
+  gray2:PropTypes.bool,
+  // style,
+  // children,
+
+};
+
+
+
+
 const styles = StyleSheet.create({
   // default style
   text: {
@@ -130,6 +173,6 @@ const styles = StyleSheet.create({
   title: theme.fonts.title,
   body: theme.fonts.body,
   caption: theme.fonts.caption,
-  header:theme.fonts.header,
+  header: theme.fonts.header,
   small: theme.fonts.small
 });

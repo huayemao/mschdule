@@ -1,26 +1,23 @@
 import React, { Component } from 'react'
 import { Text, View, StyleSheet, StatusBar, Picker, ToastAndroid, ActivityIndicator, Animated } from 'react-native'
 import { ScrollView, TouchableOpacity, TouchableNativeFeedback } from 'react-native-gesture-handler'
-import { Colors } from '../../styles/colors'
 import { theme } from '../../constants';
 import ViewPager from '@react-native-community/viewpager';
-import { TransitionPresets } from '@react-navigation/stack';
 import { Schedule } from '../../utils/schedule'
 import { CourseStatusStyles } from '../../styles/styles'
-import screenInfo from '../../utils/screen'
 import { Text as Text1, Button, Block } from '../../components'
-import { colors } from '../../constants/theme';
 import { UserContext } from '../../contexts/userContext';
-import { SvgXml } from 'react-native-svg';
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 import { createStackNavigator } from '@react-navigation/stack';
 import Schedule1 from '../../models/schedule'
 import ModalView from '../../components/modalview';
 import MyPicker from '../../components/MyPicker';
 import { NotLogined } from '../login/LoginScreen';
+import { screen } from '../../utils';
+import TableHeader from './TableHeader';
+import Course from './Course'
 
-
-const { screenHeight, screenWidth } = screenInfo;
+const { screenHeight, screenWidth } = screen;
 const CELL_WIDTH = screenWidth / 5.5;
 const Stack = createStackNavigator();
 
@@ -69,7 +66,7 @@ const TableModal = (props) => {
 
     if (!route.params) {
         return (
-            <ModalView position='bottom' color={Colors.purple} backgroundColor='#fff'>
+            <ModalView position='bottom' color={theme.colors.primary} backgroundColor='#fff'>
                 <View style={{ height: "70%", position: 'relative', justifyContent: "center" }}>
                     <Text1>敬请期待</Text1>
                 </View>
@@ -81,7 +78,7 @@ const TableModal = (props) => {
     else if (route.params.settings) {
 
         const { settings } = route.params
-        return <ModalView position='bottom' color={Colors.purple} backgroundColor='#fff'>
+        return <ModalView position='bottom' color={theme.colors.primary} backgroundColor='#fff'>
             <View style={{ height: "50%", width: '100%', position: 'relative', paddingHorizontal: theme.sizes.padding, paddingVertical: theme.sizes.padding * 2, backgroundColor: "#fff", justifyContent: "center" }}>
                 <Text1 center>{settings.title}</Text1>
                 <Text1 center>{settings.value}</Text1>
@@ -110,7 +107,7 @@ const TableModal = (props) => {
                                     >
                                         <Text style={styles.cText} numberOfLines={2}>{c.name}</Text>
                                         <Text style={styles.classRoom}>{c.classRoom || ''}</Text>
-                                        <Text style={{ color: Colors.subTitle, fontSize: 12, lineHeight: 14 }}>{c.zhouci || ''}</Text>
+                                        <Text style={{ color: theme.colors.subTitle, fontSize: 12, lineHeight: 14 }}>{c.zhouci || ''}</Text>
 
                                     </TouchableNativeFeedback>
                                 </View>
@@ -126,38 +123,28 @@ const TableModal = (props) => {
 
 
 
-
-
-
-
-
-
-
-
 export default class Table extends Component {
 
     constructor(props) {
         super(props);
         this.state = {
             pages: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16],
-            selectedWeek: 0,
+            selectedWeek: null,
             term: Schedule.curTerm,
-            loading: true
+            loading: true,
         }
         this._onPageSelected = this._onPageSelected.bind(this);
         this.filterCourse = this.filterCourse.bind(this)
-
-
-
     }
-
-    componentDidMount() {
+    scrollEnabled=false
+    async componentDidMount() {
         const { user } = this.context;
         if (!user) return
+        console.log('dsf', user.schedule.getCurWeek());
         if (user.schedule)
-            this.setState({
+            await this.setState({
                 selectedWeek: user.schedule.getCurWeek(),
-                pages: new Array(user.schedule.maxWeek+1).fill(1)
+                pages: new Array(user.schedule.maxWeek + 1).fill(1)
             })
     }
 
@@ -183,17 +170,25 @@ export default class Table extends Component {
 
 
 
-    _onPageSelected(e) {
+    async _onPageSelected(e) {
         let position = e.nativeEvent.position;
-        this.setState({ selectedWeek: position })
-
-        // this.setState({ pages: Array(position + 2).fill('1'), selectedWeek: position })
+        await this.setState({ selectedWeek: position })
     }
 
     _renderPagerItem(filter, key) {
+        if (key != this.state.selectedWeek && this.state.loading) {
+            return (
+                <View key={key}>
+                    <ActivityIndicator size="large" style={{ backgroundColor: 'white', flex: 11 }} color={theme.colors.primary} />
+                </View>
+                )
+        }
+
+        if(key != this.state.selectedWeek){this.scrollEnabled=true}
 
         const { user } = this.context
         if (!user) return
+
         let coursesToShow = this.filterCourse(filter) || []
         const cells = new Array(42).fill(new Array());//所有的元素都指向同一个对象吗
 
@@ -204,14 +199,12 @@ export default class Table extends Component {
             }
         }
 
- 
-
         return (
             <View key={key}>
                 <View style={{ flex: 11 }}>
                     <ScrollView horizontal={true} showsHorizontalScrollIndicator={false}>
-                        <View style={{ width: screenWidth * 1.4, flex: 1, backgroundColor: Colors.light }}>
-                            <TableHeader state={this.state} weekOffset={this.state.selectedWeek - user.schedule.getCurWeek()}></TableHeader>
+                        <View style={{ width: screenWidth * 1.4, flex: 1, backgroundColor: theme.colors.light }}>
+                            <TableHeader state={this.state} term={this.state.term} startDate={user.schedule.startDate} weekOffset={this.state.selectedWeek - user.schedule.getCurWeek()}></TableHeader>
                             <View style={{ flexDirection: 'row', alignContent: 'stretch', flexWrap: 'wrap', alignItems: 'stretch', flex: 11 }}>
                                 {cells.map((cell, index) => {
                                     if (index % 7 != 0) return (<Course cell={cell} key={index} {...this.props}></Course>)
@@ -230,12 +223,12 @@ export default class Table extends Component {
 
                     </ScrollView>
                 </View>
-                <View style={{ flex: 1, alignItems: 'center', backgroundColor: Colors.backGreen }}>
-                    <Text1 gray2 center style={{ color: Colors.foreGreen, fontSize: 20, fontFamily: 'Futura', zIndex: 1, position: 'relative', top: -10 }}>{getWeekStr(key)}</Text1>
+                <View style={{ flex: 1, alignItems: 'center', backgroundColor: theme.colors.backGreen }}>
+                    <Text1 gray2 center style={{ color: theme.colors.foreGreen, fontSize: 20, fontFamily: 'Futura', zIndex: 1, position: 'relative', top: -10 }}>{getWeekStr(key)}</Text1>
                     <View style={{ flexDirection: 'row', justifyContent: 'space-around' }}>
-                        <MaterialIcons name={'arrow-back'} size={20} color={Colors.foreGreen} />
+                        <MaterialIcons name={'arrow-back'} size={20} color={theme.colors.foreGreen} />
                         <Text1 center gray2 style={{ paddingHorizontal: 30, paddingVertical: 10, textAlignVertical: 'center', position: 'relative', top: -10, fontFamily: 'Futura' }}> 滑动这里换页</Text1>
-                        <MaterialIcons name={'arrow-forward'} size={20} color={Colors.foreGreen} />
+                        <MaterialIcons name={'arrow-forward'} size={20} color={theme.colors.foreGreen} />
                     </View>
                 </View>
 
@@ -248,9 +241,6 @@ export default class Table extends Component {
     render() {
         try {
             const { user } = this.context
-          
-
-            console.log(user);
 
             if (!user) {
                 return (<NotLogined navigation={this.props.navigation} type={'JW'} title={'您好像还没有登录哦，查询课表需要使用教务课表登录，只需登录一次，即可一键更新课表，赶快试试吧'} xml={Xmls.xml}></NotLogined>
@@ -259,7 +249,7 @@ export default class Table extends Component {
 
             else {
                 return (
-                    <View style={{ backgroundColor: Colors.light, flex: 1 }}>
+                    <View style={{ backgroundColor: theme.colors.light, flex: 1 }}>
                         <View style={{ flexDirection: 'row', flex: 1.2, }}>
                             <View style={{ flex: 1.5, paddingTop: StatusBar.currentHeight, }}>
                                 <MyPicker
@@ -267,66 +257,71 @@ export default class Table extends Component {
                                     prompt={"选择学期"}
                                     label={this.state.term}
                                     selectedValue={this.state.term}
-                                    textStyle={{ fontSize: 18, textAlign: 'center', lineHeight: 20, textAlignVertical: 'center', color: Colors.purple, fontFamily: 'Futura' }}
+                                    textStyle={{ fontSize: 18, textAlign: 'center', lineHeight: 20, textAlignVertical: 'center', color: theme.colors.primary, fontFamily: 'Futura' }}
                                     onValueChange={
                                         (val) => this.setState({ term: val })
                                     }
 
                                 >
                                     <Picker.Item label="当前学期" value={Schedule.curTerm} />
-                                    {user.schedule.terms && user.schedule.terms.map((e) => <Picker.Item label={e} key={e} value={e} />)}
+                                    {user.schedule && user.schedule.terms && user.schedule.terms.map((e) => <Picker.Item label={e} key={e} value={e} />)}
                                 </MyPicker>
                             </View>
 
-                            <View style={{ flex: 1, paddingTop: StatusBar.currentHeight, }}>
+                            <View onLayout={() => this.setState({ loading: false })} style={{ flex: 1, paddingTop: StatusBar.currentHeight, }}>
                                 <MyPicker
                                     textAlwaysCenter={true}
                                     prompt={"选择周次"}
                                     label={getWeekStr(this.state.selectedWeek)}
-                                    selectedValue={this.state.selectedWeek}
-                                    textStyle={{ fontSize: 18, textAlign: 'center', lineHeight: 20, textAlignVertical: 'center', color: Colors.purple, fontFamily: 'Futura', zIndex: 1 }}
+                                    theRef={r => this.weekPicker = r}
+
+                                    textStyle={{ fontSize: 18, textAlign: 'center', lineHeight: 20, textAlignVertical: 'center', color: theme.colors.primary, fontFamily: 'Futura', zIndex: 1 }}
                                     onValueChange={
-                                        (val, pos) => {
-                                            this.setState({ selectedWeek: val })
+                                        async (val, pos) => {
+                                            console.log(val, pos);
+                                            await this.setState({ selectedWeek: val })
+                                            this.weekPicker.selectedValue = val
                                             this.viewPager.setPage(val)
                                         }
                                     }
 
                                 >
+                                    <Picker.Item label="" value={this.state.selectedWeek} />
                                     <Picker.Item label="当前周" value={user.schedule.getCurWeek()} />
-                                    {this.state.pages.map((e, index) => (<Picker.Item key={index} label={getWeekStr(index)} value={index} />))}
+                                    {this.state.pages.map((e, index) => (<Picker.Item key={index} label={this.state.loading ? '-' : getWeekStr(index)} value={index} />))}
                                 </MyPicker>
                             </View>
 
-                            <View style={{ flex: 1.5, paddingTop: StatusBar.currentHeight, flexDirection: 'row', justifyContent: 'center', alignItems: 'center', backgroundColor: Colors.light }}>
+                            <View style={{ flex: 1.5, paddingTop: StatusBar.currentHeight, flexDirection: 'row', justifyContent: 'center', alignItems: 'center', backgroundColor: theme.colors.light }}>
                                 <TouchableNativeFeedback style={{ paddingHorizontal: 10, }} onPress={() => { this.props.navigation.navigate("Modal") }}>
-                                    <MaterialIcons name='info-outline' size={25} color={Colors.purple}></MaterialIcons>
+                                    <MaterialIcons name='info-outline' size={25} color={theme.colors.primary}></MaterialIcons>
                                 </TouchableNativeFeedback>
                                 <TouchableNativeFeedback style={{ paddingHorizontal: 10 }} onPress={() => { this.props.navigation.navigate("Modal", { settings: { title: "开学日期", value: user.schedule.startDate } }) }}>
-                                    <MaterialIcons name='menu' size={25} color={Colors.purple}></MaterialIcons>
+                                    <MaterialIcons name='menu' size={25} color={theme.colors.primary}></MaterialIcons>
                                 </TouchableNativeFeedback>
                             </View>
                         </View>
 
-                        {user.schedule && !this.state.loading &&
+                        {user.schedule &&
                             <ViewPager
+                                scrollEnabled={this.scrollEnabled}
                                 overScrollMode='never'
                                 initialPage={user.schedule.getCurWeek()}
+                                // initialPage={this.state.selectedWeek}
                                 style={{ flex: 11 }}
                                 ref={viewPager => { this.viewPager = viewPager; }}
                                 onPageSelected={this._onPageSelected}
                                 showPageIndicator={true}
                             >
                                 {this.state.pages.map((e, index) => this._renderPagerItem(index, index))}
+                                {/* renderPagerItem处做文章 */}
                             </ViewPager>
                         }
-                        {!this.viewPager && this.state.loading && <ActivityIndicator onLayout={() => this.setState({ loading: false })} size="large" style={{ backgroundColor: 'white', flex: 11 }} color={Colors.purple} />}
 
                     </View>
 
                 )
             }
-            // else return (<ActivityIndicator size="large" style={{ backgroundColor: 'white', flex: 11 }} color={Colors.purple} />)
 
         } catch (error) {
             console.log(error);
@@ -363,7 +358,7 @@ const styles = StyleSheet.create({
         fontWeight: '600',
         paddingTop: 3,
         paddingHorizontal: 2,
-        color: Colors.title,
+        color: theme.colors.title,
         textAlign: 'center',
         lineHeight: screenHeight >= 700 ? 16 : 14.5,
         letterSpacing: 0,
@@ -372,11 +367,11 @@ const styles = StyleSheet.create({
         letterSpacing: 0,
     },
     classRoom: {
-        color: Colors.foreBlue,
+        color: theme.colors.foreBlue,
         marginTop: 2,
         textAlign: 'center',
         fontSize: 12,
-        backgroundColor: Colors.light,
+        backgroundColor: theme.colors.light,
         borderRadius: 3,
         padding: 1,
         paddingHorizontal: 8,
@@ -393,7 +388,7 @@ const styles = StyleSheet.create({
         color: 'white',
     },
     moreText: {
-        color: Colors.foreGreen,
+        color: theme.colors.foreGreen,
         textAlignVertical: 'center',
         fontWeight: 'bold',
         textAlign: 'center',
@@ -408,7 +403,7 @@ const styles = StyleSheet.create({
         fontSize: 14,
         textAlignVertical: 'center',
         fontFamily: 'Futura',
-        color: Colors.subTitle,
+        color: theme.colors.subTitle,
     },
     container: {
         alignItems: 'center',
@@ -424,43 +419,16 @@ const styles = StyleSheet.create({
 
 
 
-// let now = new Date(Schedule.startDate.valueOf());
-let now = new Date();
-const month = now.getMonth()
-const date = now.getDate()
 
 
-const TableHeader = function (props) {
-
-    const { weekOffset, day } = props
-    console.log(weekOffset);
-    const arr = ['周一', '周二', '周三', '周四', '周五', '周六', '周日'];
-    return (
-        <View style={styles.container}>
-            {arr.map((day, index) => {
-                now.setMonth(month)
-                now.setDate(date + index + 1 - (Schedule.day===0?7:Schedule.day) + weekOffset * 7)
-                let doNotDisplay = false
-                if ((now - Schedule.startDate) / 1000 / 60 / 60 / 24 <= 0) doNotDisplay = true
-                if (props.state.term != Schedule1.curTerm) doNotDisplay = true
-
-                return (
-                    <View key={index} style={[styles.element, (Schedule.day == index + 1 | Schedule.day == 0 & index == 6) && { backgroundColor: Colors.light, borderRadius: 5 }]}>
-                        <Text style={[styles.text, (Schedule.day == index + 1 | Schedule.day == 0 & index == 6) && { color: Colors.purple }]}>{day}</Text>
-                        <Text style={[{ fontSize: 13, ...styles.text }, (Schedule.day == index + 1 | Schedule.day == 0 & index == 6) && { color: Colors.purple }]}> {doNotDisplay ? '-' : `${now.getMonth() + 1}/${now.getDate()}`}</Text>
-                    </View>)
-            })}
-        </View>
-    )
-}
 
 const Left = function (props) {
     return (<View style={[{
         marginVertical: CELL_WIDTH / 30, justifyContent: 'center', alignItems: 'center', minWidth: CELL_WIDTH / 2.5
     }, CourseStatusStyles[props.courseState]]}>
-        <Text style={[{ color: Colors.foreGreen, textAlign: 'center', fontWeight: 'bold', textAlignVertical: 'center', fontSize: 16, height: 17 }, CourseStatusStyles[props.courseState]]}>{props.jc.split('-')[0]}</Text>
-        <Text style={[{ color: Colors.foreGreen, textAlign: 'center', textAlignVertical: 'top', fontWeight: 'bold', fontSize: 12, height: 16 }, CourseStatusStyles[props.courseState]]}>ⲓ</Text>
-        <Text style={[{ color: Colors.foreGreen, textAlign: 'center', fontWeight: 'bold', textAlignVertical: 'center', fontSize: 16, height: 17 }, CourseStatusStyles[props.courseState]]}>{props.jc.split('-')[1]}</Text>
+        <Text style={[{ color: theme.colors.foreGreen, textAlign: 'center', fontWeight: 'bold', textAlignVertical: 'center', fontSize: 16, height: 17 }, CourseStatusStyles[props.courseState]]}>{props.jc.split('-')[0]}</Text>
+        <Text style={[{ color: theme.colors.foreGreen, textAlign: 'center', textAlignVertical: 'top', fontWeight: 'bold', fontSize: 12, height: 16 }, CourseStatusStyles[props.courseState]]}>ⲓ</Text>
+        <Text style={[{ color: theme.colors.foreGreen, textAlign: 'center', fontWeight: 'bold', textAlignVertical: 'center', fontSize: 16, height: 17 }, CourseStatusStyles[props.courseState]]}>{props.jc.split('-')[1]}</Text>
     </View>)
 }
 
@@ -468,48 +436,5 @@ const Left = function (props) {
 
 
 
-const Course = function (props) {
-    const { cell, navigation } = props
 
-    return (<View style={[styles.table, {
-        backgroundColor: 'white',
-        position: 'relative',
-        borderColor: 'rgba(0,0,0,0.2)',
-    }]} >
-        {/* TouchableNativeFeedback无法填满 */}
-        {cell.length === 1 &&
-            <View style={styles.cell}>
-                <TouchableNativeFeedback style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }} background={TouchableNativeFeedback.Ripple('#BABABB', false)} onPress={(e) =>
-                    navigation.navigate('课程详情', cell[0])
-                }
-
-                >
-
-                    <Text style={styles.cellText} numberOfLines={2}>{cell[0].name}</Text>
-                    <Text style={styles.classRoom}>{cell[0].classRoom || ''}</Text>
-                    <Text style={{ color: Colors.subTitle, fontSize: 12, lineHeight: 14 }}>{cell[0].zhouci || ''}</Text>
-
-                </TouchableNativeFeedback>
-            </View>
-        }
-        {cell.length > 1 &&
-            <View style={styles.cell}>
-                <TouchableNativeFeedback style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }} background={TouchableNativeFeedback.Ripple('#BABABB', false)} onPress={(e) => {
-                    navigation.navigate('Modal', { courses: cell })
-                }
-                }
-                >
-                    <Text style={styles.cellText} numberOfLines={2}>{cell[0].name}</Text>
-                    <Text style={styles.classRoom}>{cell[0].classRoom || ''}</Text>
-                    <Text style={{ color: Colors.subTitle, fontSize: 12, lineHeight: 14 }}>{cell[0].zhouci || ''}</Text>
-                    <MaterialIcons name='more' color={colors.purple} style={{ position: 'absolute', right: 0, top: 0 }}></MaterialIcons>
-
-                </TouchableNativeFeedback>
-            </View>
-        }
-
-
-
-    </View>)
-}
 

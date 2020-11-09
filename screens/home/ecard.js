@@ -1,7 +1,7 @@
 import React, { Component } from 'react'
 import { Text, View, StyleSheet, Alert, ImageBackground, Dimensions, ToastAndroid, Image, StatusBar, ActivityIndicator, KeyboardAvoidingView } from 'react-native'
 import Loading, { Loading1 } from '../../components/loading';
-import { Colors } from '../../styles/colors';
+
 import { TextInput, TouchableOpacity, ScrollView, TouchableNativeFeedback } from 'react-native-gesture-handler';
 import EcardService from '../../services/ecardService';
 import Divider from '../../components/divider';
@@ -9,9 +9,8 @@ import { commonStyles } from '../../styles/styles';
 import { Block, Button, Text as Text1, Input } from '../../components';
 import { theme } from '../../constants';
 // import LinearGradient from 'react-native-linear-gradient';
-import screenInfo from '../../utils/screen'
 import { SvgXml } from 'react-native-svg';
-import Swiper from 'react-native-swiper';
+
 import MaterialIcon from 'react-native-vector-icons/MaterialIcons';
 import ModelScreen from '../ModelScreen';
 import { UserContext } from '../../contexts/userContext';
@@ -20,6 +19,7 @@ import { RefreshControl } from 'react-native';
 
 import { createStackNavigator } from '@react-navigation/stack';
 import { EcardModal } from '../explore/EcardScreen';
+import { screen } from '../../utils';
 
 
 const Stack = createStackNavigator();
@@ -71,9 +71,7 @@ export default class Ecard extends Component {
     }
 
     render() {
-        console.log('====================================');
-        console.log(screenInfo.screenHeight / screenInfo.screenWidth);
-        console.log('====================================');
+
 
         const { EcardLogind, user } = this.context
 
@@ -81,7 +79,7 @@ export default class Ecard extends Component {
 
         if ((user && !user.ecardAccount) || !user) {
             return (
-                <View style={{ justifyContent: 'space-around', flex: 1, paddingHorizontal: theme.sizes.padding, paddingVertical: theme.sizes.padding * 2, backgroundColor: Colors.light, alignItems: 'center' }}
+                <View style={{ justifyContent: 'space-around', flex: 1, paddingHorizontal: theme.sizes.padding, paddingVertical: theme.sizes.padding * 2, backgroundColor: theme.colors.light, alignItems: 'center' }}
                 >
                     <Text1 gray caption>您好像还没有登录哦，使用校园卡充值功能需要使用信息门户密码登录</Text1>
                     <SvgXml xml={Xmls.xml} width="200" height="200" />
@@ -104,14 +102,14 @@ export default class Ecard extends Component {
                         overScrollMode='always'
                         contentContainerStyle={{ display: 'flex', flex: 1 }}
                         refreshControl={
-                            <RefreshControl collapsable={true} colors={[Colors.purple]} refreshing={this.state.refreshing} onRefresh={async (onRefresh) => {
+                            <RefreshControl collapsable={true} colors={[theme.colors.primary]} refreshing={this.state.refreshing} onRefresh={async (onRefresh) => {
                                 this.setState({ refreshing: true })
                                 await this.context.ecardRefresh();
                                 this.setState({ refreshing: false })
                             }} />
 
                         } >
-                        <View style={{ backgroundColor: Colors.light, flex: 1, position: 'relative', justifyContent: 'center',paddingHorizontal:theme.sizes.padding }}>
+                        <View style={{ backgroundColor: theme.colors.light, flex: 1, position: 'relative', justifyContent: 'center', paddingHorizontal: theme.sizes.padding }}>
                             <Factors
                                 style={{ alignItems: 'center' }}
                                 data={[
@@ -120,22 +118,22 @@ export default class Ecard extends Component {
                                     { title: '过渡余额', value: transBalance },
                                     { title: '电子账户', value: eAccountBalance }]} />
 
-                            <Text style={{ color: Colors.subTitle, fontSize: 15, fontFamily: 'Futura', lineHeight: 16, textAlign: 'right', paddingHorizontal: theme.sizes.padding / 2, textDecorationStyle: 'solid', textDecorationLine: 'underline', position: 'absolute', bottom: 2, right: 0 }} >下拉刷新</Text>
+                            <Text style={{ color: theme.colors.subTitle, fontSize: 15, fontFamily: 'Futura', lineHeight: 16, textAlign: 'right', paddingHorizontal: theme.sizes.padding / 2, textDecorationStyle: 'solid', textDecorationLine: 'underline', position: 'absolute', bottom: 2, right: 0 }} >下拉刷新</Text>
 
                         </View>
                         <View style={{ flex: 3.5, position: 'relative', justifyContent: 'center' }}>
                             {/* <Text1 bold gray size={16} style={{ paddingHorizontal: theme.sizes.padding }}>转账到</Text1> */}
-                            <CardWidthShadow scale={screenInfo.screenHeight / screenInfo.screenWidth < 1.8 ? 0.7 : 0.8} onPress={() => this.props.navigation.navigate("homeEcardModal", { type: '校园卡', ...this.state })}>
-                                <View style={{ flex: 1, borderRadius: 10, alignItems: 'center', backgroundColor: Colors.backGreen, justifyContent: 'center', alignItems: 'center' }}>
-                                    <MaterialIcon name={'subject'} style={{ textAlign: 'center' }} size={50} color={Colors.foreGreen} ></MaterialIcon>
-                                    <Text1 gray style={{ color: Colors.foreGreen, fontSize: 20, textAlign: 'center', fontFamily: 'Futura', padding: 4 }}>校园卡</Text1>
+                            <CardWidthShadow scale={screen.screenHeight / screen.screenWidth < 1.8 ? 0.7 : 0.8} onPress={() => this.props.navigation.navigate("homeEcardModal", { type: '校园卡', ...this.state })}>
+                                <View style={{ flex: 1, borderRadius: 10, alignItems: 'center', backgroundColor: theme.colors.backGreen, justifyContent: 'center', alignItems: 'center' }}>
+                                    <MaterialIcon name={'subject'} style={{ textAlign: 'center' }} size={50} color={theme.colors.foreGreen} ></MaterialIcon>
+                                    <Text1 gray style={{ color: theme.colors.foreGreen, fontSize: 20, textAlign: 'center', fontFamily: 'Futura', padding: 4 }}>校园卡</Text1>
 
                                 </View>
                             </CardWidthShadow>
-                            <CardWidthShadow scale={screenInfo.screenHeight / screenInfo.screenWidth < 1.8 ? 0.7 : 0.8} onPress={() => this.props.navigation.navigate("homeEcardModal", { type: '电子账户', ...this.state })}>
-                                <View style={{ flex: 1, borderRadius: 10, alignItems: 'center', backgroundColor: Colors.backBlue, justifyContent: 'center', alignItems: 'center' }}>
-                                    <MaterialIcon name={'toll'} style={{ textAlign: 'center' }} size={50} color={Colors.foreBlue} ></MaterialIcon>
-                                    <Text1 gray style={{ color: Colors.foreBlue, fontSize: 20, textAlign: 'center', fontFamily: 'Futura', padding: 4 }}>电子账户</Text1>
+                            <CardWidthShadow scale={screen.screenHeight / screen.screenWidth < 1.8 ? 0.7 : 0.8} onPress={() => this.props.navigation.navigate("homeEcardModal", { type: '电子账户', ...this.state })}>
+                                <View style={{ flex: 1, borderRadius: 10, alignItems: 'center', backgroundColor: theme.colors.backBlue, justifyContent: 'center', alignItems: 'center' }}>
+                                    <MaterialIcon name={'toll'} style={{ textAlign: 'center' }} size={50} color={theme.colors.foreBlue} ></MaterialIcon>
+                                    <Text1 gray style={{ color: theme.colors.foreBlue, fontSize: 20, textAlign: 'center', fontFamily: 'Futura', padding: 4 }}>电子账户</Text1>
 
                                 </View>
                             </CardWidthShadow>
@@ -146,7 +144,7 @@ export default class Ecard extends Component {
         }
         else {
             return (
-                <ActivityIndicator style={{ position: 'absolute', top: 0, left: 0, right: 0, bottom: 0, backgroundColor: 'white' }} size='large' color={Colors.purple} ></ActivityIndicator>
+                <ActivityIndicator style={{ position: 'absolute', top: 0, left: 0, right: 0, bottom: 0, backgroundColor: 'white' }} size='large' color={theme.colors.primary} ></ActivityIndicator>
             )
         }
     }
@@ -156,13 +154,13 @@ export default class Ecard extends Component {
 
 
 
-const CardWidthShadow = (props) => {
+export const CardWidthShadow = (props) => {
     const totalWidth = Dimensions.get('window').width;
-    const totalHeight = Dimensions.get('window').width * 13 / 20
+    const totalHeight = Dimensions.get('window').width * 14 / 20
     return (
-        <View style={{ alignItems: 'center' }}>
+        <View style={{ alignItems: 'center',...props.style }}>
             <TouchableOpacity onPress={props.onPress}>
-                <ImageBackground source={require('../../assets/shadow.jpg')} style={{ width: totalWidth * (props.scale || 1), height: totalHeight * (props.scale || 1), padding: totalWidth * 24 / 200 * (props.scale || 1), margin: -totalWidth * 10 / 200 * (props.scale || 1) }}>
+                <ImageBackground source={require('../../assets/shadow.png')} style={{ width: totalWidth * (props.scale || 1), height: totalHeight * (props.scale || 1), paddingHorizontal: totalWidth * 25 / 200  * (props.scale || 1), paddingVertical: totalHeight * 24 / 140 * (props.scale || 1),marginVertical:-totalHeight * 24 / 140 * (props.scale || 1)/4 }}>
                     {props.children}
                 </ImageBackground>
             </TouchableOpacity>
@@ -203,9 +201,9 @@ export const Factors = (props) => {
                     if (props.oneline)
                         return (
                             <View style={{ flexDirection: 'row', alignItems: 'center', margin: props.vertical ? 0 : 5 }} key={index} >
-                                {!props.noLogo && <View style={{ height: 10, width: 10, borderRadius: 2, marginRight: 5, backgroundColor: index % 3 == 0 ? Colors.foreGreen : index % 3 == 1 ? Colors.foreBlue : Colors.forRed }}></View>} 
-                                <Text style={{ color: Colors.subTitle, fontSize: 12 }}>{item.title}</Text>
-                                <Text style={{ paddingLeft: 15, fontFamily: 'Futura', fontSize: 16, height: 24, paddingTop: 2, color: Colors.title }}><Value>{item.value}</Value></Text>
+                                {!props.noLogo && <View style={{ height: 10, width: 10, borderRadius: 2, marginRight: 5, backgroundColor: index % 3 == 0 ? theme.colors.foreGreen : index % 3 == 1 ? theme.colors.foreBlue : theme.colors.forRed }}></View>}
+                                <Text style={{ color: theme.colors.subTitle, fontSize: 12 }}>{item.title}</Text>
+                                <Text style={{ paddingLeft: 15, fontFamily: 'Futura', fontSize: 16, height: 24, paddingTop: 2, color: theme.colors.title }}><Value>{item.value}</Value></Text>
                             </View>
                         )
 
@@ -213,9 +211,9 @@ export const Factors = (props) => {
                     else
                         return (
                             <View style={{}} key={index}>
-                                <View style={{ position: 'absolute', bottom: 24, left: 0, height: 10, width: 10, borderRadius: 2, marginRight: 5, backgroundColor: index % 3 == 0 ? Colors.foreGreen : index % 3 == 1 ? Colors.foreBlue : Colors.forRed }}></View>
-                                <Text style={{ paddingLeft: 15, fontFamily: 'Futura', fontSize: 16, height: 24, paddingTop: 2, color: Colors.title }}><Value>{item.value}</Value></Text>
-                                <Text style={{ color: Colors.subTitle, fontSize: 12 }}>{item.title}</Text>
+                                <View style={{ position: 'absolute', bottom: 24, left: 0, height: 10, width: 10, borderRadius: 2, marginRight: 5, backgroundColor: index % 3 == 0 ? theme.colors.foreGreen : index % 3 == 1 ? theme.colors.foreBlue : theme.colors.forRed }}></View>
+                                <Text style={{ paddingLeft: 15, fontFamily: 'Futura', fontSize: 16, height: 24, paddingTop: 2, color: theme.colors.title }}><Value>{item.value}</Value></Text>
+                                <Text style={{ color: theme.colors.subTitle, fontSize: 12 }}>{item.title}</Text>
                             </View>)
                 })
             }
@@ -230,10 +228,10 @@ export const Factors = (props) => {
 
 const styles = StyleSheet.create({
     row: {
-        backgroundColor: Colors.light,
+        backgroundColor: theme.colors.light,
         lineHeight: 40,
         fontSize: 16,
-        color: Colors.darkGray,
+        color: theme.colors.darkGray,
     },
     tabContainer: {
         paddingHorizontal: 10,
@@ -244,7 +242,7 @@ const styles = StyleSheet.create({
     },
     destroy: {
         fontSize: 15,
-        color: Colors.purple,
+        color: theme.colors.primary,
         textAlign: 'center',
         paddingHorizontal: 10,
 

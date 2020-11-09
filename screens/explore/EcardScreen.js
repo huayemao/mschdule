@@ -2,10 +2,8 @@ import React, { Component } from 'react'
 import { Text, View, Dimensions, StatusBar } from 'react-native'
 import EcardService from '../../services/ecardService'
 import { ScrollView } from 'react-native-gesture-handler'
-import WebView from 'react-native-webview'
 import Loading from '../../components/loading'
 import { commonStyles } from '../../styles/styles'
-import { Colors } from '../../styles/colors'
 import { createStackNavigator } from '@react-navigation/stack';
 import { TouchableNativeFeedback } from 'react-native'
 import { theme } from '../../constants';
@@ -123,7 +121,6 @@ export class EcardModal extends Component {
 
         const { navigation, route } = this.props
 
-        console.log(navigation, route);
         if (route.params.type) {
             const { type } = route.params
             return (
@@ -135,11 +132,11 @@ export class EcardModal extends Component {
                                 onSubmitEditing={this.handlePost}
                                 placeholder="请输入转账金额"
                                 style={{ flex: 1, borderBottomWidth: 1, borderBottomColor: 'lightgrey', lineHeight: 25, margin: 0, padding: 0 }} ></TextInput>
-                            <Button style={{ margin: theme.sizes.padding, padding: theme.sizes.padding, height: 50, borderRadius: 10, elevation: 1, backgroundColor: Colors.backRed }} color={Colors.purple} onPress={this.handlePost}>
+                            <Button style={{ margin: theme.sizes.padding, padding: theme.sizes.padding, height: 50, borderRadius: 10, elevation: 1, backgroundColor: theme.colors.backRed }} color={theme.colors.primary} onPress={this.handlePost}>
                                 {this.state.loading ? (
-                                    <ActivityIndicator size="small" color={Colors.forRed} />
+                                    <ActivityIndicator size="small" color={theme.colors.forRed} />
                                 ) :
-                                    <Text1 color={Colors.forRed} size={18} center bold> 确定</Text1>}
+                                    <Text1 color={theme.colors.forRed} size={18} center bold> 确定</Text1>}
                             </Button>
                         </View>
                     </KeyboardAvoidingView>
@@ -192,12 +189,12 @@ export class Ecard extends Component {
         return (
             <View style={{ flex: 1, paddingTop: StatusBar.currentHeight }}>
                 <View style={commonStyles.item}>
-                    <Text>余额</Text><Text style={{ color: Colors.purple, fontFamily: 'Futura', fontSize: 18 }}>￥0.01</Text>
+                    <Text>余额</Text><Text style={{ color: theme.colors.primary, fontFamily: 'Futura', fontSize: 18 }}>￥0.01</Text>
                 </View>
                 <View style={commonStyles.item}></View>
 
                 <TouchableNativeFeedback style={{ paddingHorizontal: 10, }} onPress={() => { this.props.navigation.navigate("EcardModal") }}>
-                    <Text style={{ color: Colors.purple, fontFamily: 'Futura', fontSize: 18 }}>￥0.01</Text>
+                    <Text style={{ color: theme.colors.primary, fontFamily: 'Futura', fontSize: 18 }}>￥0.01</Text>
                 </TouchableNativeFeedback>
 
                 {/* <ScrollView style={{ height: '100%' }}>

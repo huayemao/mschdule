@@ -2,18 +2,20 @@ import React, { Component, } from 'react';
 import {
   Text,
   View,
+  Alert,
   StatusBar,
   ImageBackground,
   Image,
   StyleSheet,
-  TouchableOpacity
+  TouchableOpacity,
+  Linking
 } from 'react-native';
 import Animated from 'react-native-reanimated';
 
 import { createMaterialTopTabNavigator } from '@react-navigation/material-top-tabs';
 import { SvgXml } from 'react-native-svg';
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
-import { Colors } from '../../styles/colors';
+
 import { TouchableNativeFeedback } from 'react-native';
 import Item, { ItemContainer } from '../../components/item';
 import { Block, Button, Text as Text1 } from '../../components';
@@ -29,7 +31,8 @@ const xml = `
 
 import { createStackNavigator } from '@react-navigation/stack';
 import performance from '../home/Grades';
-import { Alert } from 'react-native';
+import {  } from 'react-native';
+import UpdateSerivce from '../../services/updateService';
 const Stack = createStackNavigator();
 
 
@@ -71,7 +74,7 @@ const SettingsModal = (props) => {
 
   if (!route.params) {
     return (
-      <ModalView position='bottom' color={Colors.purple} backgroundColor='#fff'>
+      <ModalView position='bottom' color={theme.colors.primary} backgroundColor='#fff'>
         <View style={{ height: "70%", position: 'relative', justifyContent: "center" }}>
           <Text1>敬请期待</Text1>
         </View>
@@ -92,6 +95,44 @@ export default class Settings extends Component {
 
   handlemessage(e) {
     console.log(e)
+  }
+
+  checkUpdates = async () => {
+    try {
+      // this.setState({ loading: true });
+      const res = await UpdateSerivce.checkUpdates()
+      console.log(res.data);
+      if (res.data.latest !== '0.0.0.9.3') Alert.alert(
+        `有新版本可用`,
+        `当前版本：0.0.0.9.3\n最新版本：${res.data.latest}`,
+        [
+          {
+            text: '去下载',
+            onPress: () =>
+              Linking.canOpenURL('https://mschedule.seedbed.xyz').then(supported => {
+                if (!supported) console.warn('Can\'t handle url: ' + 'https://mschedule.seedbed.xyz');
+                else {
+                  return Linking.openURL('https://mschedule.seedbed.xyz');
+                }
+              })
+
+          },
+          {
+            text: '取消',
+            onPress: () => console.log('Cancel Pressed'),
+            style: 'cancel',
+          },
+
+        ],
+      )
+      else ToastAndroid.show('当前已是最新版本',ToastAndroid.LONG)
+    } catch (error) {
+      Alert.alert('连接失败', error.toString())
+    }
+    finally{
+      // this.setState({ loading: false });
+    }
+
   }
 
   clearStorage = async () => {
@@ -137,20 +178,23 @@ export default class Settings extends Component {
     try {
       this.setState({ loading: true });
       if (this.context.user) {
+        await this.context.user.jwLogin()
         await this.context.user.initSchedule()
         await User.saveUser(this.context.user)
         ToastAndroid.show("更新课表数据成功", ToastAndroid.LONG)
-        // console.log(this.context);
         this.setState({ loading: false });
         this.props.navigation.navigate('首页')
       }
       else {
         ToastAndroid.show("您尚未登录", ToastAndroid.LONG)
       }
-      this.setState({ loading: false });
     } catch (error) {
-      this.setState({ loading: false });
+      console.log(error);
+
       alert(error)
+    }
+    finally {
+      this.setState({ loading: false });
     }
 
   }
@@ -174,6 +218,18 @@ export default class Settings extends Component {
       value: <MaterialIcons name='palette' style={{ fontSize: 24 }}></MaterialIcons>,
       state: 'green',
     }
+    const data3 = {
+      title: '主题',
+      sub1: '更改外观设置',
+      value: <MaterialIcons name='info' style={{ fontSize: 24 }}></MaterialIcons>,
+      state: 'red',
+    }
+    const data4 = {
+      title: '主题',
+      sub1: '更改外观设置',
+      value: <MaterialIcons name='web' style={{ fontSize: 24 }}></MaterialIcons>,
+      state: 'blue',
+    }
 
     return (
       <View style={{ paddingTop: StatusBar.currentHeight, backgroundColor: 'white', flex: 1 }}>
@@ -192,8 +248,24 @@ export default class Settings extends Component {
           <Item.Title>{data2.title}</Item.Title>
           <Item.SubTitle>{data2.sub1}</Item.SubTitle>
         </Item>
+        <Item containerStyle={{ backgroundColor: 'white' }} onPress={this.checkUpdates} index={1} data={data3}>
+          <Item.Title>检查更新</Item.Title>
+          <Item.SubTitle>点击检查更新</Item.SubTitle>
+        </Item>
+        <Item containerStyle={{ backgroundColor: 'white' }} onPress={() => {
+          Linking.canOpenURL('https://mschedule.seedbed.xyz').then(supported => {
+            if (!supported) {
+              console.warn('Can\'t handle url: ' + 'https://mschedule.seedbed.xyz');
+            } else {
+              return Linking.openURL('https://mschedule.seedbed.xyz');
+            }
+          }).catch(err => console.error('An error occurred', 'https://mschedule.seedbed.xyz'));
+        }} index={1} data={data4}>
+          <Item.Title>官网</Item.Title>
+          <Item.SubTitle>https://mschedule.seedbed.xyz</Item.SubTitle>
+        </Item>
 
-        {this.state.loading && <ActivityIndicator onLayout={() => this.setState({ schedule: this.context.schedule })} size="large" style={{ background: 'white', position: 'absolute', flex: 1, top: 0, left: 0, bottom: 0, right: 0, backgroundColor: 'rgba(0,0,0,.3)' }} color={Colors.purple} />}
+        {this.state.loading && <ActivityIndicator onLayout={() => this.setState({ schedule: this.context.schedule })} size="large" style={{ background: 'white', position: 'absolute', flex: 1, top: 0, left: 0, bottom: 0, right: 0, backgroundColor: 'rgba(0,0,0,.3)' }} color={theme.colors.primary} />}
       </View>
     )
   }

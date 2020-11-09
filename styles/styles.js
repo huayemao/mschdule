@@ -1,5 +1,5 @@
 import { StyleSheet } from "react-native";
-import { Colors } from "./colors";
+import { theme } from "../constants";
 
 export const CourseStatusStyles = StyleSheet.create({
     green: {
@@ -28,7 +28,7 @@ export const commonStyles = StyleSheet.create({
     },
     count: {
         textAlignVertical: 'center',
-        color: Colors.purple,
+        color: theme.colors.primary,
         position: 'absolute',
         top: '30%',
         fontSize: 16,

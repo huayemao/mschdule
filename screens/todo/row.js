@@ -1,7 +1,6 @@
 import React, { Component } from 'react'
 import { Text, View, StyleSheet, TouchableOpacity, TextInput } from 'react-native'
-import { Colors } from '../../styles/colors'
-
+import { theme } from '../../constants';
 
 export class Row extends Component {
     render() {
@@ -14,7 +13,7 @@ export class Row extends Component {
         )
 
         const removeButton = (
-            <TouchableOpacity onPress={this.props.onRemove} style={{ backgroundColor: 'white', justifyContent: "center", alignItems: 'center', borderRadius: 12, height: 35, width: 52, borderWidth: 0.4, borderColor: Colors.forRed }}>
+            <TouchableOpacity onPress={this.props.onRemove} style={{ backgroundColor: 'white', justifyContent: "center", alignItems: 'center', borderRadius: 12, height: 35, width: 52, borderWidth: 0.4, borderColor: theme.colors.forRed }}>
                 <Text style={styles.destroy}>delete</Text>
             </TouchableOpacity>
         )
@@ -44,7 +43,7 @@ export class Row extends Component {
                 <View style={{ justifyContent: 'center', alignItems: 'center' }}>
                     <TouchableOpacity
                         onPress={this.props.onComplete}
-                        style={{ justifyContent: 'center', marginLeft: 10, backgroundColor: this.props.complete ? Colors.backGreen : '#fff', width: 35, height: 35, borderRadius: 8, borderColor: Colors.foreGreen, borderWidth: this.props.complete ? 0 : 0.3 }}>
+                        style={{ justifyContent: 'center', marginLeft: 10, backgroundColor: this.props.complete ? theme.colors.backGreen : '#fff', width: 35, height: 35, borderRadius: 8, borderColor: theme.colors.foreGreen, borderWidth: this.props.complete ? 0 : 0.3 }}>
                         {!this.props.complete && <Text style={styles.unchecked}>{String.fromCharCode(10003)}</Text>}
                         {this.props.complete && <Text style={styles.checked}>{String.fromCharCode(10003)}</Text>}
                     </TouchableOpacity>
@@ -66,11 +65,11 @@ const styles = StyleSheet.create({
         flexDirection: 'row',
         alignItems: "flex-start",
         justifyContent: "center",
-        backgroundColor: Colors.light
+        backgroundColor: theme.colors.light
     },
     text: {
         fontSize: 20,
-        color: Colors.darkGray,
+        color: theme.colors.darkGray,
         fontWeight: '200',
         marginLeft: 10,
     },
@@ -83,7 +82,7 @@ const styles = StyleSheet.create({
     },
     destroy: {
         fontSize: 15,
-        color: Colors.forRed,
+        color: theme.colors.forRed,
         textAlign: 'center',
         fontWeight: 'bold'
     },
@@ -101,7 +100,7 @@ const styles = StyleSheet.create({
         padding: 4
     },
     doneText: {
-        color: Colors.dark,
+        color: theme.colors.dark,
         fontSize: 20
     },
     checked: {

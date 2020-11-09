@@ -15,7 +15,7 @@ const defaultHeader = {
 export default class JWService {
     static async login2(username, password) {
         axios.defaults.withCredentials = true;
-        return axios({
+        const res=await axios({
             url:'http://ca.its.csu.edu.cn/Home/Login/52',
             method: 'POST',
             headers: { 
@@ -34,7 +34,26 @@ export default class JWService {
               },
             data: `userName=${username}&passWord=${password}&enter=true`
         })
+
+        if(res.data.includes('submit(')){
+            const tokenId=res.data.match(/value=".{12,35}"/)[0].replace(`value="`,'').replace(`"`,'');
+            const account=res.data.match(/value="\d+"/)[0].replace(`value="`,'').replace(`"`,'');
+            const Thirdsys=res.data.match(/value="[a-zA-Z]+"/)[0].replace(`value="`,'').replace(`"`,'')
+            
+         
+            const res111=await JWService.after(tokenId,account,Thirdsys)      
+        //  if(res111)
+     
+        
+        return {
+            result: '登录成功',
+            name: res111.data.match(/<font size="4">.*<\/font>/)[0].replace('<font size="4">', '').replace('</font>', '')
+        }
+        
+
+
     }
+}
 
     static async after(a, b,c) {
         return  axios({
@@ -55,6 +74,8 @@ export default class JWService {
               },
             data: `tokenId=${encodeURIComponent(a)}&account=${encodeURIComponent(b)}&Thirdsys=${encodeURIComponent(c)}`
         })
+
+        
     }
 
 
@@ -77,38 +98,16 @@ export default class JWService {
                 if (res.data.match(/ color="red">.*</)) {
 
                     const alternative = await JWService.login2(num, psd);
-                    if(alternative.data.includes('submit(')){
-                        const tokenId=alternative.data.match(/value=".{12,35}"/)[0].replace(`value="`,'').replace(`"`,'');
-                        const account=alternative.data.match(/value="\d+"/)[0].replace(`value="`,'').replace(`"`,'');
-                        const Thirdsys=alternative.data.match(/value="[a-zA-Z]+"/)[0].replace(`value="`,'').replace(`"`,'')
-            
-                        console.log(tokenId,account,Thirdsys)
-                 axios.defaults.withCredentials = true;
-                        try{
-                    const res111=await JWService.after(tokenId,account,Thirdsys)
-                    
-                        console.log(res111.data)
-                        return {
-                            result: '登录成功',
-                            name: res111.data.match(/<font size="4">.*<\/font>/)[0].replace('<font size="4">', '').replace('</font>', '')}
-                    }
-                    
 
-                    catch(e){
-                      
-                        console.log(e)
-                    }
-
-                 
-              
-               
-                    throw {
-                        result: '登录失败',
-                        msg: res.data.match(/ color="red">.*</)[0].replace('color="red">', '').replace('<', '')
-                    }
+                    if(alternative) return alternative
+                       
+                        throw {
+                            result: '登录失败',
+                            msg: res.data.match(/ color="red">.*</)[0].replace('color="red">', '').replace('<', '')
+                        }
                 }
                 else {
-                    // console.log(res)
+                    console.log(res.data)
                     const name = res.data.match(/<font size="4">.*<\/font>/)[0].replace('<font size="4">', '').replace('</font>', '');
                     return{
                         result: '登录成功',
@@ -121,11 +120,11 @@ export default class JWService {
                 code: res.status
             }
 
-        }}catch(e){
+        }catch(e){
             console.log(e)
+            throw(e)
     }
 
-        // })   
     }
 
     static getTimeTable(term) {

@@ -3,7 +3,6 @@ import { Text, Modal, View, StatusBar, ScrollView, Picker } from 'react-native'
 import { SvgXml } from 'react-native-svg';
 import SimpleInput, { Label, ConfrimBtn } from '../../components/SimpleInput';
 import  screenInfo  from '../../utils/screen';
-import { Colors } from '../../styles/colors';
 import Icon from 'react-native-vector-icons/dist/FontAwesome5';
 import { TouchableNativeFeedback } from 'react-native-gesture-handler';
 import {
@@ -13,6 +12,7 @@ import {
     MenuTrigger,
     renderers,
 } from 'react-native-popup-menu';
+import { theme } from '../../constants';
 export default class CourseDetail extends Component {
     constructor(props) {
         super(props);
@@ -30,7 +30,7 @@ export default class CourseDetail extends Component {
 `;
         const { params } = this.props.route
         return (
-            <View style={{ flex: 1, backgroundColor: Colors.light, justifyContent: 'center', alignItems: 'center' }}>
+            <View style={{ flex: 1, backgroundColor: theme.colors.light, justifyContent: 'center', alignItems: 'center' }}>
                 <View style={{ width: '100%' }}>
                     {/* <Modal
                         animationType="slide"
@@ -52,14 +52,14 @@ export default class CourseDetail extends Component {
                         <MenuOptions customStyles={{ optionsContainer: { width: 140 } }}>
                             <MenuOption onSelect={() => this.props.navigation.navigate('主页')}>
                                 <View style={{ height: 40, flexDirection: 'row', alignItems: 'center', justifyContent: 'flex-start' }}>
-                                    <Icon style={{ paddingHorizontal: 10, width: 44 }} name='edit' color={Colors.purple} size={20}></Icon>
-                                    <Text style={{ fontSize: 16, color: Colors.title }}>编辑课程</Text>
+                                    <Icon style={{ paddingHorizontal: 10, width: 44 }} name='edit' color={theme.colors.primary} size={20}></Icon>
+                                    <Text style={{ fontSize: 16, color: theme.colors.title }}>编辑课程</Text>
                                 </View>
                             </MenuOption>
                             <MenuOption onSelect={() => this.props.navigation.navigate('主页')}>
                                 <View style={{ height: 40, flexDirection: 'row', alignItems: 'center', justifyContent: 'flex-start' }}>
-                                    <Icon style={{ paddingHorizontal: 10, width: 44 }} name='trash-alt' color={Colors.purple} size={20}></Icon>
-                                    <Text style={{ fontSize: 16, color: Colors.title }}>删除课程</Text>
+                                    <Icon style={{ paddingHorizontal: 10, width: 44 }} name='trash-alt' color={theme.colors.primary} size={20}></Icon>
+                                    <Text style={{ fontSize: 16, color: theme.colors.title }}>删除课程</Text>
                                 </View>
                             </MenuOption>
                         </MenuOptions>
@@ -82,7 +82,7 @@ export default class CourseDetail extends Component {
                                 style={{ borderBottomWidth: 0 }}
 
                             />
-                            <Label style={{ fontWeight: '700', fontSize: 16, marginTop: 10, color: Colors.title, paddingHorizontal: 10 }}>教师</Label>
+                            <Label style={{ fontWeight: '700', fontSize: 16, marginTop: 10, color: theme.colors.title, paddingHorizontal: 10 }}>教师</Label>
                             <SimpleInput
                                 // value={this.state.value}
                                 // onChangeText={(value) => this.setState({ value: value })}

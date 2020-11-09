@@ -40,14 +40,16 @@ export default class Course {
 
         if (zhouci.indexOf('单') != -1) {
             zhouci.replace('(单周)', '').split(',').forEach(el => {
-                for (let i = Number(el.split('-')[0]); i <= Number(el.split('-')[1]); i += 2) {
+                for (let i = Number(el.split('-')[0]); i <= Number(el.split('-')[1]); i += 1) {
+                    if(i%2===1)
                     weeks.push(Number(i))
                 }
             })
         }
         else if (zhouci.indexOf('双') != -1) {
             zhouci.replace('(双周)', '').split(',').forEach(el => {
-                for (let i = Number(el.split('-')[0]); i <= Number(el.split('-')[1]); i += 2) {
+                for (let i = Number(el.split('-')[0]); i <= Number(el.split('-')[1]); i += 1) {
+                    if(i%2===0)
                     weeks.push(Number(i))
                 }
             })

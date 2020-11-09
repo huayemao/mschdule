@@ -4,7 +4,7 @@ import { Block, Button, Text as Text1, Input } from '../../components';
 import JWService from '../../services/jwService';
 import { UserContext } from '../../contexts/userContext';
 import { TouchableNativeFeedback, FlatList } from 'react-native-gesture-handler';
-import { Colors } from '../../styles/colors';
+
 import Item, { LeftLogo } from '../../components/item';
 import { ToastAndroid } from 'react-native';
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
@@ -58,7 +58,7 @@ export class GradesModal extends Component {
 
         if (!route.params) {
             return (
-                <ModalView position='bottom' color={Colors.purple} backgroundColor='#fff'>
+                <ModalView position='bottom' color={theme.colors.primary} backgroundColor='#fff'>
                     <View style={{ height: "60%", position: 'relative', justifyContent: "center" }}>
                         <Text1>敬请期待</Text1>
                     </View>
@@ -96,7 +96,7 @@ export class GradesModal extends Component {
             }
 
             return (
-                <ModalView position='bottom' color={Colors.purple} backgroundColor='#fff'>
+                <ModalView position='bottom' color={theme.colors.primary} backgroundColor='#fff'>
                     <View style={{ position: 'relative', justifyContent: "center", alignItems: 'center', height: Dimensions.get('screen').height / 2 }}>
 
                         <ModalView.Title style={{ flex: 1 }}>{item.name}</ModalView.Title>
@@ -168,7 +168,7 @@ export class performance extends Component {
         let { grades } = this.state
         if (!this.context.user) grades = null
         return (
-            <View style={{ flex: 1, backgroundColor: Colors.light }}>
+            <View style={{ flex: 1, backgroundColor: theme.colors.light }}>
                 <View>
                     <Text style={styles.title}>MY GRADES</Text>
                     <Text style={styles.count}>{grades instanceof Array && grades && grades.length || 0} courses</Text>
@@ -176,7 +176,8 @@ export class performance extends Component {
      
                 {grades &&
                     <FlatList
-                        style={{ backgroundColor: Colors.light }}
+                        bounces={true}
+                        style={{ backgroundColor: theme.colors.light }}
                         data={grades}
                         keyExtractor={(item, index) => `${index}`}
                         renderItem={({ item, index }) => {
@@ -195,10 +196,10 @@ export class performance extends Component {
                         }}
                     >
                     </FlatList>}
-                <Button style={{ width: 50, justifyContent: 'center', alignItem: 'center', height: 50, borderRadius: 25, backgroundColor: Colors.purple, position: 'absolute', bottom: 20, right: 20, zIdex: 1, elevation: 2, opacity: .9 }} onPress={this.handleQuery}>
+                <Button style={{ width: 50, justifyContent: 'center', alignItem: 'center', height: 50, borderRadius: 25, backgroundColor: theme.colors.primary, position: 'absolute', bottom: 20, right: 20, zIdex: 1, elevation: 2, opacity: .9 }} onPress={this.handleQuery}>
                     <MaterialIcons style={{ textAlign: 'center', textAlignVertical: 'center' }} name={this.state.grades ? 'filter-list' : 'search'} size={25} color='white'></MaterialIcons>
                 </Button>
-                {this.state.loading && <ActivityIndicator size="large" style={{ backgroundColor: 'white', flex: 11 }} color={Colors.purple} />}
+                {this.state.loading && <ActivityIndicator size="large" style={{ backgroundColor: 'white', flex: 11 }} color={theme.colors.primary} />}
 
             </View>
         )
@@ -210,7 +211,7 @@ const styles = StyleSheet.create({
     title: {
         lineHeight: 40,
         fontFamily: 'Futura',
-        color: Colors.subTitle,
+        color: theme.colors.subTitle,
         // color: '#8795a1',
         fontWeight: '600',
         fontSize: 18,
@@ -222,7 +223,7 @@ const styles = StyleSheet.create({
     count: {
         fontFamily: 'Futura',
         textAlignVertical: 'center',
-        color: Colors.purple,
+        color: theme.colors.primary,
         position: 'absolute',
         top: '25%',
         fontSize: 16,

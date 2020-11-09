@@ -4,17 +4,13 @@ import JWService from '../services/jwService';
 import Schedule from './schedule';
 
 
-
-
 export default class User {
-
 
     constructor(jwAccount = undefined, ecardAccount = undefined, name = undefined, schedule = undefined) {
         this.jwAccount = jwAccount;
         this.ecardAccount = ecardAccount;
         this.schedule = schedule;
         this.name = name
-
         // grade 在 jwAccount setter 中设置
     }
 
@@ -127,7 +123,6 @@ export default class User {
         try {
             let obj = {}
             const values = await AsyncStorage.multiGet(['jwAccount', 'ecardAccount', 'name', 'schedule'])
-            // [ ['@MyApp_user', 'myUserValue'], ['@MyApp_key', 'myKeyValue'] ]
 
             if (values[0][1] == null && values[1][1] === null) {
                 return null

@@ -1,8 +1,7 @@
 import React, { Component } from 'react'
 import { Text, StyleSheet } from 'react-native'
 import { TouchableOpacity } from 'react-native-gesture-handler'
-import { Colors } from '../styles/colors'
-
+import { theme } from '../constants'
 export default class Tab extends Component {
     render() {
         return (
@@ -31,11 +30,11 @@ const styles = StyleSheet.create({
       backgroundColor:'rgb(246, 245, 253)',
     },
     activeText: {
-      color: Colors.purple,
+      color: theme.colors.primary,
     },
     buttonText: {
       fontSize: 16,
       fontWeight:'600',
-      color:Colors.darkGray
+      color:theme.colors.darkGray
     }
   })

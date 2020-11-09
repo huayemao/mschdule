@@ -2,10 +2,8 @@
 import React, { Component } from 'react';
 import 'react-native-gesture-handler';
 import { NavigationContainer } from '@react-navigation/native';
-import { MenuProvider } from 'react-native-popup-menu';
 import { HomeScreen } from './screens/home/HomeScreen';
 import Settings, { SettingsStack } from './screens/settings/SettingsScreen';
-import { Colors } from './styles/colors';
 import { ToolBoxStackScreen } from './screens/explore/ExploreScreen';
 import screenInfo from './utils/screen'
 import Table, { TableStack } from './screens/Table/TableScreen';
@@ -23,6 +21,7 @@ import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 import { createMaterialBottomTabNavigator } from '@react-navigation/material-bottom-tabs';
 import AsyncStorage from '@react-native-community/async-storage';
 import { Alert } from 'react-native';
+import { theme } from './constants';
 
 const MyTab = createMaterialBottomTabNavigator();
 const CourseStack = createStackNavigator();
@@ -32,7 +31,7 @@ const Stack = createStackNavigator()
 function HomeTabs() {
   return (
     <MyTab.Navigator
-      activeColor={Colors.purple}
+      activeColor={theme.colors.primary}
       inactiveColor="rgba(84,75,187,.4)"
       barStyle={{ backgroundColor: 'white' }}
       keyboardHidesNavigationBar={false}
@@ -43,7 +42,7 @@ function HomeTabs() {
         tabBarIcon: ({ color }) => (
           <MaterialIcons name="home" color={color} size={23} />
         ),
-        // tabBarColor: Colors.backGreen,
+        // tabBarColor: theme.colors.backGreen,
       }} />
       <MyTab.Screen name="课表" component={TableStack} options={{
         tabBarLabel: '课表',
@@ -101,7 +100,7 @@ class App extends Component {
 
 
 
-    this.initSchedule = async () => {
+    this.initUser = async () => {
       try {
         console.log("从本地初始化数据");
 
@@ -220,7 +219,7 @@ class App extends Component {
       setEcardData: this.setEcardData,
       downLoadSchedule: this.downLoadSchedule,
       initEcard: this.initEcard,
-      initSchedule: this.initSchedule,
+      initUser: this.initUser,
       setState: this.setState,
       ecardRefresh:this.ecardRefresh
     }
@@ -234,13 +233,10 @@ class App extends Component {
       console.assert(user, "找到本地用户数据")
 
       if (user) {
-        console.log(new Date().toLocaleDateString());
-        console.log(user);
         await this.setState({ user })
-        this.initSchedule()
+        // this.initUser()
 
         user.ecardAccount && this.initEcard()
-        // user.ecardAccount && this.initEcard(user)
       }
 
     }

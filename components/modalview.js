@@ -3,7 +3,6 @@ import { View, Text } from 'react-native';
 import styled from 'styled-components/native'
 import { theme } from '../constants';
 import { themes } from '../contexts/userContext';
-import { Colors } from '../styles/colors';
 
 
 const Container = styled.View`
@@ -37,7 +36,7 @@ class ModalView extends Component {
         ...props.style,
         fontWeight: 'bold',
         fontSize: 18,
-        color: Colors.purple,
+        color: theme.colors.primary,
         letterSpacing: 1.1,
         textAlign: 'center'
       }}>{props.children}</Text>
@@ -57,7 +56,7 @@ class ModalView extends Component {
       return (
         <Container position1={`${position}`}>
           <Header backgroundColor={backgroundColor}>
-            <Shape style={{ elevation: 2 }} color={Colors.purple}>
+            <Shape style={{ elevation: 2 }} color={theme.colors.primary}>
             </Shape>
           </Header>
 

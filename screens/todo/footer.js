@@ -1,7 +1,6 @@
 import React, { Component } from 'react';
 import { Text, View, TouchableOpacity, StyleSheet } from 'react-native';
-import { Colors } from '../../styles/colors'
-
+import { theme } from '../../constants';
 export default class Footer extends Component {
   render() {
     const { filter } = this.props;
@@ -25,7 +24,7 @@ export default class Footer extends Component {
             </TouchableOpacity>
           </View>
           <TouchableOpacity onPress={this.props.onClearComplete}>
-            <Text style={{ fontWeight: 'bold', fontSize: 16, paddingEnd: 10, color: Colors.forRed }}>Clear All</Text>
+            <Text style={{ fontWeight: 'bold', fontSize: 16, paddingEnd: 10, color: theme.colors.forRed }}>Clear All</Text>
           </TouchableOpacity>
         </View>
       </>
@@ -51,11 +50,11 @@ const styles = StyleSheet.create({
     flexDirection: "row"
   },
   selected: {
-    borderBottomColor: Colors.purple,
+    borderBottomColor: theme.colors.primary,
     borderBottomWidth: 2
   },
   selectedText: {
-    color: Colors.purple,
+    color: theme.colors.primary,
 
   },
   title: {
@@ -69,7 +68,7 @@ const styles = StyleSheet.create({
   },
   count: {
     textAlignVertical: 'center',
-    color: Colors.purple,
+    color: theme.colors.primary,
     position: 'absolute',
     top: '30%',
     fontSize: 16,

@@ -1,22 +1,19 @@
 import React, { Component } from 'react'
-import { Text, View, StyleSheet, ScrollView, StatusBar, SafeAreaView, Image, Modal, ToastAndroid, ActivityIndicator, KeyboardAvoidingView } from 'react-native'
+import { Text, View, StyleSheet, ScrollView, StatusBar, SafeAreaView, Image, AppState, ToastAndroid, ActivityIndicator, KeyboardAvoidingView } from 'react-native'
 import { createStackNavigator } from '@react-navigation/stack';
 import ClassDetial from '../Table/CourseScreen';
-import { Colors } from '../../styles/colors';
+
 import Loading from '../../components/loading';
-import Ecard, { HomeEcardStack } from './Ecard';
+import { HomeEcardStack } from './Ecard';
 import SplashScreen from 'react-native-splash-screen'
 import EcardService from '../../services/ecardService';
-import Course from '../../models/course';
 import { Schedule } from '../../utils/schedule';
 import { createMaterialTopTabNavigator } from '@react-navigation/material-top-tabs';
 
 import { TouchableOpacity, TouchableNativeFeedback } from 'react-native-gesture-handler';
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 import { SvgXml } from 'react-native-svg';
-import screenInfo from '../../utils/screen';
 import Xmls from '../../components/svgXmls'
-import User from '../../models/user';
 import Login, { NotLogined } from '../login/LoginScreen';
 import { Block, Button, Text as Text1 } from '../../components';
 import { theme } from '../../constants';
@@ -71,10 +68,9 @@ export class Home extends Component {
             user: null,
             modalVisible: false,
             witchtoLogin: 'JW',
-            ecard: EcardService.reset()
+            ecard: EcardService.reset(),
+            appState: AppState.currentState
         }
-
-
     }
 
     static contextType = UserContext
@@ -85,13 +81,42 @@ export class Home extends Component {
         else { ToastAndroid.show("没有课程数据，请确认已经登录", ToastAndroid.SHORT) }
     }
 
+    _handleAppStateChange = nextAppState => {
+        if (
+            this.state.appState.match(/inactive|background/) &&
+            nextAppState === "active"
+        ) {
+            console.log("App has come to the foreground!");
+            this.refresh()
+        }
+        this.setState({ appState: nextAppState });
+
+    };
+
     async componentDidMount() {
         StatusBar.setHidden(false)
         SplashScreen.hide();
+        AppState.addEventListener("change", this._handleAppStateChange);
+        // const { user } = this.context;
+        // if (user && user.schedule)
+        // setInterval(()=>{
+        //     this.setState({
+
+        //     })
+        // })
     }
 
+    refresh = () => {
+        Schedule1.now = new Date();
+        this.setState({})
+    }
+
+
     renderTop = () => {
+
         const { user } = this.context
+        const schedule = user?.schedule
+
 
         return (
             <View style={{ flex: .24, justifyContent: 'center', width: '100%', marginTop: StatusBar.currentHeight }}>
@@ -100,26 +125,34 @@ export class Home extends Component {
                     title={user && user.name || 'CSUer'}
                     subTitle={user && (user.jwAccount && user.jwAccount.username || user.ecardAccount && user.ecardAccount.username) || '未登录'}
                     source={require("../../assets/Snipa.jpg")} {...this.props}></Avatar>
-
-                <FullScheduleBtn onPress={this.viewFullSchedule} />
+                <View style={{ position: 'absolute', right: theme.sizes.padding * 2 }}>
+                    <Text1 primary h3 style={{ fontFamily: "Futura" }}>{schedule?.getNextCourse() ? 'next' : ''}</Text1>
+                    <Text1 primary h2 bold  >{schedule && schedule.getNextCourse()?.classRoom || ''}</Text1>
+                    {/* <FullScheduleBtn onPress={this.viewFullSchedule} /> */}
+                </View>
             </View>
         )
     }
 
 
     render() {
-        const { user } = this.context
+        this.props.navigation.addListener(
+            'didFocus',
+            payload => {
+                this.refresh()
+                console.log("Payload is called .....................")
+            }
+        );
         return (
             <>
-                <SafeAreaView style={{ flex: 1, backgroundColor: Colors.light }}>
+                <SafeAreaView style={{ flex: 1, backgroundColor: theme.colors.light }}>
                     <StatusBar translucent={true} barStyle='dark-content' backgroundColor={'transparent'} />
-                    {/* <KeyboardAvoidingView style={{ flex: 1, backgroundColor: Colors.light }} behavior='height' > */}
                     {this.renderTop()}
                     <Tab.Navigator
                         tabBarOptions={{
-                            activeTintColor: Colors.purple,
+                            activeTintColor: theme.colors.primary,
                             indicatorStyle: {
-                                backgroundColor: Colors.purple,
+                                backgroundColor: theme.colors.primary,
                                 width: 6,
                                 borderRadius: 3,
                                 left: 47,
@@ -132,26 +165,25 @@ export class Home extends Component {
                         }}>
                         <Tab.Screen name="今日课程" component={TodayCourse} options={{
                             tabBarLabel: ({ focused, color }) => {
-                                return (<View style={{ width: '100%', justifyContent: 'center', borderRadius: 10, backgroundColor: focused ? Colors.light : 'white' }}>
-                                    <Text style={{ color: focused ? Colors.purple : Colors.subTitle, width: 85, height: 35, textAlign: 'center', textAlignVertical: 'center', fontFamily: 'Futura', fontSize: focused ? 15 : 14 }}>今日课程</Text></View>)
+                                return (<View style={{ width: '100%', justifyContent: 'center', borderRadius: 10, backgroundColor: focused ? theme.colors.light : 'white' }}>
+                                    <Text style={{ color: focused ? theme.colors.primary : theme.colors.subTitle, width: 85, height: 35, textAlign: 'center', textAlignVertical: 'center', fontFamily: 'Futura', fontSize: focused ? 15 : 14 }}>今日课程</Text></View>)
                             }
                         }} />
                         <Tab.Screen name="校园卡" component={HomeEcardStack} options={{
                             tabBarLabel: ({ focused, color }) => {
-                                return (<View style={{ width: '100%', justifyContent: 'center', borderRadius: 10, backgroundColor: focused ? Colors.light : 'white' }}>
-                                    <Text style={{ color: focused ? Colors.purple : Colors.subTitle, width: 85, height: 35, textAlign: 'center', textAlignVertical: 'center', fontFamily: 'Futura', fontSize: focused ? 15 : 14 }}>校园卡</Text></View>)
+                                return (<View style={{ width: '100%', justifyContent: 'center', borderRadius: 10, backgroundColor: focused ? theme.colors.light : 'white' }}>
+                                    <Text style={{ color: focused ? theme.colors.primary : theme.colors.subTitle, width: 85, height: 35, textAlign: 'center', textAlignVertical: 'center', fontFamily: 'Futura', fontSize: focused ? 15 : 14 }}>校园卡</Text></View>)
                             }
                         }} />
                         <Tab.Screen name="成绩查询" component={performance} options={{
                             tabBarLabel: ({ focused, color }) => {
-                                return (<View style={{ width: '100%', justifyContent: 'center', borderRadius: 10, backgroundColor: focused ? Colors.light : 'white' }}>
-                                    <Text style={{ color: focused ? Colors.purple : Colors.subTitle, width: 85, height: 35, textAlign: 'center', textAlignVertical: 'center', fontFamily: 'Futura', fontSize: focused ? 15 : 14 }}>成绩查询</Text></View>)
+                                return (<View style={{ width: '100%', justifyContent: 'center', borderRadius: 10, backgroundColor: focused ? theme.colors.light : 'white' }}>
+                                    <Text style={{ color: focused ? theme.colors.primary : theme.colors.subTitle, width: 85, height: 35, textAlign: 'center', textAlignVertical: 'center', fontFamily: 'Futura', fontSize: focused ? 15 : 14 }}>成绩查询</Text></View>)
                             }
                         }} />
 
 
                     </Tab.Navigator>
-                    {/* </KeyboardAvoidingView> */}
                 </SafeAreaView>
             </>
         )
@@ -162,14 +194,6 @@ export default Home
 
 
 
-const getCoursesToday = (courses, curWeek) => {
-    console.log(courses)
-    return courses.filter(
-        course => (course.weeks.indexOf(curWeek) !== -1||course.weeks===curWeek) &
-            course.xq == Schedule.curDate.getDay()
-    )
-        .sort((a, b) => a.jc - b.jc);
-}
 
 
 
@@ -204,36 +228,28 @@ export class TodayCourse extends Component {
         if (user && user.schedule) {
 
             const { schedule } = user
-            const curWeek = schedule.getCurWeek()
-            const courses = schedule.courses[Schedule1.curTerm]
-
-            let todayCourse = getCoursesToday(courses, curWeek)
+            let todayCourse = schedule.getCoursesToday()
 
             return (
-                <View style={{ flex: 1, backgroundColor: Colors.light }}>
+                <View style={{ flex: 1, backgroundColor: theme.colors.light }}>
                     <View>
                         <Text style={styles.title}>TODAY'S COURSES</Text>
                         <Text style={styles.count}>{todayCourse instanceof Array && todayCourse.length || 0} courses</Text>
                     </View>
                     {todayCourse instanceof Array && todayCourse.length === 0 && <NoCourse />}
                     <View style={{ flex: 1 }}>
-                        <ScrollView style={{ backgroundColor: Colors.light }} >
+                        <ScrollView style={{ backgroundColor: theme.colors.light }} >
                             {todayCourse instanceof Array && todayCourse.length > 0 && todayCourse.map((c, index) => {
                                 const data = {
-                                    title: c.name,
-                                    sub1: c.classRoom,
-                                    sub2: c.teacher,
-                                    seperator: ' | ',
                                     value: `${2 * c.jc - 1}-${c.jc * 2}`,
-                                    sub3: c.zhouci,
                                     state: Schedule.mapTime(c.jc - 1)
                                 }
                                 return (
                                     <Item onPress={() => this.props.navigation.navigate('课程详情', c)} index={index} data={data} key={index} {...this.props}>
                                         <View style={{ justifyContent: 'center' }}>
-                                            <Item.Title>{data.title}</Item.Title>
-                                            <Item.SubTitle>{data.sub1.length > 0 ? data.sub1 : '-'}</Item.SubTitle>
-                                            <Item.SubTitle>{data.sub3.trim()}</Item.SubTitle>
+                                            <Item.Title>{c.name}</Item.Title>
+                                            <Item.SubTitle >{c.classRoom.length > 0 ? c.classRoom : '-'} | {c.teacher.length > 0 ? c.teacher : '-'}</Item.SubTitle>
+                                            <Item.SubTitle>{c.zhouci.trim()}</Item.SubTitle>
 
                                         </View>
                                     </Item>)
@@ -262,7 +278,7 @@ export class TodayCourse extends Component {
 
 const NoCourse = () => (
     <View style={[styles.noCourse, { alignItems: 'center', justifyContent: 'space-around' }]}>
-        <Text style={{ paddingHorizontal: 40, color: Colors.title }}>今天好像没有课程哦,去看看本周课表吧</Text>
+        <Text style={{ paddingHorizontal: 40, color: theme.colors.title }}>今天好像没有课程哦,去看看本周课表吧</Text>
         <SvgXml xml={Xmls.xml1} width="200" height="200" />
         {/* <Button style={{ width: 160, height: 45 }} gradient onPress={() => {
         this.setState({ modalVisible: true })
@@ -281,10 +297,10 @@ const Name = (props) => (<Text style={{
 }}>{props.children}</Text>)
 
 
-const Avatar = (props) => (
+export const Avatar = (props) => (
     <View style={{ flexDirection: 'row', ...props.style }} >
-        <TouchableOpacity onPress={() => { props.navigation.navigate("设置") }} style={{ width: 56, height: 56, borderRadius: 15 }}>
-            <Image source={props.source} style={{ width: 56, height: 56, backgroundColor: 'white', borderRadius: 15 }} />
+        <TouchableOpacity onPress={() => { props.navigation.navigate("设置") }} style={{ width: 48, height: 48, borderRadius: props.circle ? 24 : 10 }}>
+            <Image source={props.source} style={{ width: 48, height: 48, backgroundColor: 'white', borderRadius: props.circle ? 24 : 10 }} />
         </TouchableOpacity>
         <View style={{ flexDirection: 'column', justifyContent: 'space-around', marginLeft: theme.sizes.padding / 2 }}>
             <Name>{props.title}</Name>
@@ -296,7 +312,7 @@ const Avatar = (props) => (
 const FullScheduleBtn = (props) => (
     <View style={{ position: 'absolute', right: theme.sizes.padding }}>
         <TouchableOpacity onPress={props.onPress}>
-            <Text style={{ elevation: 10, fontSize: 16, padding: 5, color: Colors.title, fontFamily: 'Futura' }}> 完整课表</Text>
+            <Text style={{ elevation: 10, fontSize: 16, padding: 5, color: theme.colors.title, fontFamily: 'Futura' }}> 完整课表</Text>
         </TouchableOpacity>
     </View>
 )
@@ -336,7 +352,7 @@ const styles = StyleSheet.create({
     title: {
         lineHeight: 40,
         fontFamily: 'Futura',
-        color: Colors.subTitle,
+        color: theme.colors.subTitle,
         // color: '#8795a1',
         fontWeight: '600',
         fontSize: 18,
@@ -348,7 +364,7 @@ const styles = StyleSheet.create({
     count: {
         fontFamily: 'Futura',
         textAlignVertical: 'center',
-        color: Colors.purple,
+        color: theme.colors.primary,
         position: 'absolute',
         top: '25%',
         fontSize: 16,

@@ -37,7 +37,8 @@ const getTerms = function (grade) {
 let startDate = new Date(2020, 7, 6);
 let curWeek;
 
-export const Schedule = {
+export  const Schedule = {
+    scheduleArr,
     startDate,
     curDate,
     emptyCell,
@@ -53,8 +54,8 @@ export const Schedule = {
     mapTime: function (jc) {
         // const Time = new Date();
         const time = curDate.getHours() + curDate.getMinutes() / 60
-        if (time > scheduleArr[jc].start & time < scheduleArr[jc].end) return 'red'
-        if (time > scheduleArr[jc].end) return 'green'
+        if (time >= scheduleArr[jc].start & time < scheduleArr[jc].end) return 'red'
+        if (time >= scheduleArr[jc].end) return 'green'
         if (time < scheduleArr[jc].start) return 'blue'
     },
     getAndSaveStartDates: async function (grade) {

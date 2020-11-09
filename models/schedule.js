@@ -1,6 +1,6 @@
 import JWService from "../services/jwService";
 import Course from "./course";
-
+import { schedule as util } from '../utils'
 
 const getMaxWeek = (courses) => {
     let maxWeeks = []
@@ -17,9 +17,8 @@ const getMaxWeek = (courses) => {
             maxWeeks = [Math.max.apply(null, maxWeeks)]
         }
     }
-    const data = Math.max.apply(null, maxWeeks)
-    console.log(data);
-    return data
+    const value = Math.max.apply(null, maxWeeks)
+    return value
 }
 
 export default class Schedule {
@@ -31,6 +30,8 @@ export default class Schedule {
         this.terms = Schedule.getTerms(user ? user.grade : '')
         user.schedule = this
         this.maxWeek = getMaxWeek(this.courses)
+        this.curWeek = this.getCurWeek()
+        this.todayCourses = this.getCoursesToday()
     }
 
     get maxWeek() {
@@ -46,11 +47,9 @@ export default class Schedule {
     }
 
     set courses(courses) {
-
-
-
         this._courses = courses;
     }
+
     get startDate() {
         return this._startDate
 
@@ -130,10 +129,8 @@ export default class Schedule {
 
     getCurWeek() {
         let MonthAndDate = this.startDate.split('-').map((e, index) => index === 0 ? Number(e) - 1 : Number(e))
-
         let newDate = new Date();
         newDate.setMonth(...MonthAndDate)
-
         return Math.ceil(((Schedule.now - newDate) / 1000 / 60 / 60 / 24 / 7))
     }
 
@@ -152,6 +149,30 @@ export default class Schedule {
         return data
     }
 
+
+    getCoursesToday() {
+        const courses = this.courses[Schedule.curTerm];
+        const curWeek = this.curWeek
+        const result = courses.filter(
+            course => {
+                const isIncurWeek = course.weeks.indexOf(curWeek) !== -1 || course.weeks === curWeek;
+                const isTheDay = course.xq == Schedule.now.getDay()
+                // console.log(isIncurWeek, isTheDay);
+                return isIncurWeek && isTheDay
+            }
+        ).sort((a, b) => a.jc - b.jc)
+
+        this.todayCourses = result
+        return result
+    }
+
+    getNextCourse() {
+        let nextCourse = this.todayCourses.filter((c) => {
+            const time = Schedule.now.getHours() + Schedule.now.getMinutes() / 60
+            if (time < util.scheduleArr[c.jc-1].start) return true
+        })[0]
+        return nextCourse
+    }
 }
 
 

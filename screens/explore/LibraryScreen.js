@@ -14,7 +14,6 @@ import {
 
 import FontAwesome5Icon from 'react-native-vector-icons/FontAwesome5';
 import Icon from 'react-native-vector-icons/Ionicons';
-import { Colors } from '../../styles/colors';
 import { TouchableNativeFeedback, FlatList } from 'react-native-gesture-handler';
 
 import { Button, Text as Text1, Block, Input, } from '../../components'
@@ -306,14 +305,14 @@ export class Library extends Component {
                 <FlatList
                     onEndReachedThreshold={0.5}
                     onEndReached={() => { this.search(++pageTorender, false) }}
-                    style={{ backgroundColor: Colors.light }}
+                    style={{ backgroundColor: theme.colors.light }}
                     data={data.books && data.books}
                     renderItem={this.renderItems}
                     keyExtractor={item => item.id}
                     refreshControl={
                         <RefreshControl
                             refreshing={this.state.refreshing}
-                            colors={[Colors.purple]}
+                            colors={[theme.colors.primary]}
                             progressBackgroundColor={"#ffffff"}
                             onRefresh={() => { pageTorender = 1; this.search(pageTorender, true) }}
                         />

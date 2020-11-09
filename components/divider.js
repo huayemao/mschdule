@@ -1,21 +1,20 @@
 import React from 'react'
 import { View, Text } from 'react-native'
-import { Colors } from '../styles/colors'
+import { theme } from '../constants'
 
 const Divider = (props) => {
     return (
-        <View>
+        <View style={{flexDirection:'row',paddingHorizontal:theme.sizes.padding,alignItems:'center'}}>
+            <View style={{backgroundColor:props.color||theme.colors.gray,width:4,height:18}}></View>
             <Text style={[{
+                textAlign:'center',
                 lineHeight: 40,
                 fontFamily: 'Futura',
-                color: Colors.subTitle,
-                // color: '#8795a1',
+                color: props.color||theme.colors.gray,
                 fontWeight: '600',
                 fontSize: 18,
-                backgroundColor: 'white',
                 borderBottomColor: '#f5f5f5',
-                borderBottomWidth: 2,
-                paddingHorizontal: 10
+                paddingHorizontal: 5
             },props.style]}>{props.children}</Text>
         </View>
     )

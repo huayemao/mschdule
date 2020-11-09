@@ -1,7 +1,7 @@
 import React, { Component } from 'react'
 import { Text, View, StyleSheet, Alert, ImageBackground, Dimensions, ToastAndroid, Linking, StatusBar, ActivityIndicator, KeyboardAvoidingView } from 'react-native'
 import Loading, { Loading1 } from '../../components/loading';
-import { Colors } from '../../styles/colors';
+
 import { TextInput, TouchableOpacity, ScrollView, TouchableNativeFeedback, FlatList } from 'react-native-gesture-handler';
 import EcardService from '../../services/ecardService';
 import Divider from '../../components/divider';
@@ -194,7 +194,7 @@ export default class NavScreen extends Component {
                     />
                 </View>
                 <FlatList
-                    style={{ backgroundColor: Colors.light }}
+                    style={{ backgroundColor: theme.colors.light }}
                     data={data.filter((e) => {
                         if (searchString) return e.name.indexOf(searchString) !== -1
                         else return true

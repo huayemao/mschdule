@@ -63,14 +63,12 @@ import { theme } from "../constants";
 }
 
 Button.defaultProps = {
-  startColor: '#8E2DE2',
-  endColor: '#4A00E0',
-  // startColor: theme.colors.primary,
-  // endColor: theme.colors.secondary,
-  start: { x: 0, y: 0 },
-  end: { x: 1, y: 1 },
-  locations: [0.1, 0.9],
-  opacity: 0.8,
+  startColor: theme.colors.primary,
+  endColor: theme.colors.secondary,
+  start: { x: 0.1, y: 0.1 },
+  end: { x: 1, y: 0.9 },
+  locations: [0.4, 0.8],
+  opacity: 0.98,
   color: theme.colors.white
 };
 

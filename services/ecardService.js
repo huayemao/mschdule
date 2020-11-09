@@ -140,7 +140,7 @@ export default class EcardService {
             const eAccountBalance = $('table tr:nth-child(4) > td.second > span').text().trim()
             // const eAccountBalance = res.data.match(/>(\d+\.\d+)|(>0)/g)[1].substring(1)
             const data={ ecardbalance,bankCard,ecardNum,bankBalance,transBalance,eAccountBalance,checkSign,name }
-            console.log(data)
+            // console.log(data)
          return data
             
         } catch (error) {
@@ -151,7 +151,7 @@ export default class EcardService {
 
     static async deposit(amount, cardtype,password) {
        
-
+        console.log("checkSignin",this.checkSign);
         return axios({
             url: 'http://ecard.csu.edu.cn:8070/SynCard/Manage/TransferPost',
             method: 'POST',

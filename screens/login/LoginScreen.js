@@ -8,7 +8,8 @@ import {
     Keyboard,
     KeyboardAvoidingView,
     StyleSheet,
-    View
+    View,
+    Alert
 } from "react-native";
 
 import MaterialIcon from 'react-native-vector-icons/MaterialIcons';
@@ -18,7 +19,6 @@ import { theme } from "../../constants";
 import { UserContext } from "../../contexts/userContext";
 import User from "../../models/user";
 import { Schedule } from "../../utils/schedule";
-import { Colors } from '../../styles/colors'
 
 import { SvgXml } from "react-native-svg";
 
@@ -285,7 +285,18 @@ export default class Login extends Component {
 
         } catch (e) {
             console.log(e)
-            alert(e.msg||e)
+            console.log(e.msg)
+            console.log( typeof e.msg)
+            let str=''
+            if(typeof e =='string') str=e
+            if(typeof e.msg =='string') str=e.msg
+           
+          
+            Alert.alert(
+                '登录失败',
+                str
+            )
+            // alert(e.msg||e)
 
         } finally {
             this.setState({ loading: false })
@@ -379,7 +390,7 @@ export default class Login extends Component {
 
 
 export const  NotLogined = ({title,xml,type,navigation,...props}) => (
-    <View style={{ justifyContent: 'space-around', flex: 1, paddingHorizontal: theme.sizes.padding, paddingVertical: theme.sizes.padding * 2, backgroundColor: Colors.light, alignItems: 'center' }}
+    <View style={{ justifyContent: 'space-around', flex: 1, paddingHorizontal: theme.sizes.padding, paddingVertical: theme.sizes.padding * 2, backgroundColor: theme.colors.light, alignItems: 'center' }}
     >
         <Text gray caption>{title}</Text>
         <SvgXml xml={xml} width="200" height="200" />
